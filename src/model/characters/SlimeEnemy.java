@@ -1,7 +1,10 @@
-package model;
+package model.characters;
+import java.util.*;
 
 /**
- * [description]
+ * Slime enemy type.
+ * Special abilities: 20% chance that when it's attack() method is called, there
+ * will be no damage (i.e. zero effect on opponent).
  */
 public class SlimeEnemy extends EnemyCharacter
 {
@@ -16,28 +19,36 @@ public class SlimeEnemy extends EnemyCharacter
 
     /**
      * Constructor.
-     * @param inName The enemy species' name.
      */
     public SlimeEnemy()
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
-              MIN_ATTACK, MAX_ATTACK, MIN_DEF, MAX_DEF);
+        super(GOLD, MAX_HEALTH, 
+              MIN_ATTACK, MAX_ATTACK, 
+              MIN_DEF, MAX_DEF);
     }
 
+    /**
+     * Slime String representation
+     * @return Slime as a String
+     */
     @Override
     public String toString()
     {
-        return super.toString() + ", " +
-            MIN_ATTACK + "-" + MAX_ATTACK + " attack, " +
-            MIN_DEF + "-" + MAX_DEF + " defence, ";
+        return SPECIES_NAME + ", " + super.toString();
     }
 
     /**
      * Define this species' special abilities here
      */
     @Override
-    public int modifier(int damage)
+    protected int modifier(Random randGenerator, int damage)
     {
-        return 0; //todo
+        // 20% chance attack will have no damage
+        if (randGenerator.nextInt(100) < 20)
+        {
+            damage = 0;
+        }
+
+        return damage;
     }
 }
