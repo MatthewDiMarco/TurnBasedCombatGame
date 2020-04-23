@@ -10,6 +10,7 @@ import java.util.*;
 public abstract class GameCharacter
 {
     // Character Attributes
+    private String name;
     private int gold;
     protected int currHealth;
     private final int maxHealth;
@@ -20,8 +21,9 @@ public abstract class GameCharacter
      * @param inGold The character's starting gold.
      * @param inMaxHealth The character's health cap.
      */
-    public GameCharacter(int inGold, int inMaxHealth)
+    public GameCharacter(String inName, int inGold, int inMaxHealth)
     {
+        setName(inName);
         setGold(inGold);
         if (inMaxHealth <= 0)
         {
@@ -36,6 +38,15 @@ public abstract class GameCharacter
     }
 
     /**
+     * Name accessor.
+     * @return The character's name
+     */
+    public String getName()
+    {
+        return name;
+    }
+
+    /**
      * Health accessor.
      * @return The character's current health.
      */
@@ -43,6 +54,61 @@ public abstract class GameCharacter
     {
         return currHealth;
     }
+
+    /**
+     * Maximum Health accessor.
+     * @return The character's health capacity
+     */
+    public int getMaxHealth()
+    {
+        return maxHealth;
+    }
+
+    /**
+     * Gold accessor.
+     * @return The character's current coinage.
+     */
+    public int getGold()
+    {
+        return gold; 
+    }
+
+    /**
+     * Dead/Alive Status accessor.
+     * @return True of character is dead.
+     */
+    public boolean isDead()
+    {
+        return dead; 
+    }
+
+    /**
+     * A simple string representation of the character.
+     * @return A String containing health and gold.
+     */
+    public String toString()
+    {
+        return currHealth + "/" + 
+               maxHealth + " Health, " + 
+               gold + "G";
+    }
+
+    /**
+     * Name mutator.
+     * @param inName The character's new name
+     */
+    public void setName(String inName)
+    {
+        if (inName.isEmpty())
+        {
+            throw new IllegalArgumentException(
+                "Character must have a name"
+            );
+        }
+        
+        name = inName;
+    }
+
 
     /**
      * Health mutator.
@@ -81,22 +147,6 @@ public abstract class GameCharacter
         {
             gold = inGold;
         }
-    }
-
-    public boolean isDead()
-    {
-        return dead; 
-    }
-
-    /**
-     * A simple string representation of the character.
-     * @return A String containing health and gold.
-     */
-    public String toString()
-    {
-        return currHealth + "/" + 
-               maxHealth + " Health, " + 
-               gold + "G";
     }
 
     protected void die()

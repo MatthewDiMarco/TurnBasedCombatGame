@@ -21,10 +21,10 @@ public abstract class EnemyCharacter extends GameCharacter
      * @param minD Minimum Defence
      * @param maxD Maximum Defence
      */
-    public EnemyCharacter(int gold, int maxHealth, 
+    public EnemyCharacter(String inSpecies, int gold, int maxHealth, 
                           int minA, int maxA, int minD, int maxD)
     {
-        super(gold, maxHealth);
+        super(inSpecies, gold, maxHealth);
         if (minA < 0 || maxA < 0 || minD < 0 || maxD < 0)
         {
             throw new IllegalArgumentException(
@@ -44,6 +44,16 @@ public abstract class EnemyCharacter extends GameCharacter
         minDefence = minD;
         maxDefence = maxD;
         generator = new Random();
+    }
+
+    public String getAttackRange()
+    {
+        return minAttack + " - " + maxAttack; 
+    }
+
+    public String getDefenceRange()
+    {
+        return minDefence + " - " + maxDefence; 
     }
 
     /**

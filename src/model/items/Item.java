@@ -79,6 +79,15 @@ public abstract class Item
     } 
 
     /**
+     * Range accessor
+     * @return The item's effect range
+     */
+    public String getEffectRange()
+    {
+        return minEffect + " - " + maxEffect;
+    } 
+
+    /**
      * A simple string representation of the item
      * @return A String containing the attributes
      */

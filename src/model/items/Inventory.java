@@ -6,67 +6,29 @@ import java.util.*;
  */
 public class Inventory
 {
-    protected ArrayList<DamageItem> weapons;
-    protected ArrayList<DefenceItem> armours;
-    protected ArrayList<ConsumableItem> potions;
+    protected ArrayList<Item> items;
     protected int numItems;
 
     public Inventory() 
     {
-        weapons = new ArrayList<DamageItem>();
-        armours = new ArrayList<DefenceItem>();
-        potions = new ArrayList<ConsumableItem>();
+        items = new ArrayList<Item>();
         numItems = 0;
     }
 
-    public ArrayList<DamageItem> getWeapons()
+    public ArrayList<Item> getItems()
     {
-        return weapons;
+        return items;
     }
 
-    public ArrayList<DefenceItem> getArmours()
+    public void addItem(Item inItem)
     {
-        return armours;
-    }
-    
-    public ArrayList<ConsumableItem> getPotions()
-    {
-        return potions;
-    }
-
-    public void addWeapon(DamageItem item)
-    {
-        weapons.add(item);
+        items.add(inItem);
         numItems++;
     }
 
-    public void addArmour(DefenceItem item)
+    public void removeItem(int index)
     {
-        armours.add(item);
-        numItems++;
-    }
-
-    public void addPotion(ConsumableItem item)
-    {
-        potions.add(item);
-        numItems++;
-    }
-
-    public void removeWeapon(int index)
-    {
-        weapons.remove(index);
-        numItems--;
-    }
-
-    public void removeArmour(int index)
-    {
-        armours.remove(index);
-        numItems--;
-    }
-
-    public void removePotions(int index)
-    {
-        potions.remove(index);
+        items.remove(index);
         numItems--;
     }
 }

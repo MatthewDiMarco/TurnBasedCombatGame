@@ -20,8 +20,7 @@ public class PlayerCharacter extends GameCharacter
      */
     public PlayerCharacter(String inName, PlayerInventory inInventory)
     {
-        super(DEFAULT_GOLD, MAX_HEALTH);
-        setName(inName);
+        super(inName, DEFAULT_GOLD, MAX_HEALTH);
         if (inInventory == null)
         {
             throw new IllegalArgumentException(
@@ -31,39 +30,7 @@ public class PlayerCharacter extends GameCharacter
 
         inventory = inInventory;
     }
-
-    /**
-     * Name mutator.
-     * @param inName The character's new name
-     */
-    public void setName(String inName)
-    {
-        if (inName.isEmpty())
-        {
-            throw new IllegalArgumentException(
-                "Character must have a name"
-            );
-        }
-        
-        name = inName;
-    }
-
-    /**
-     * todo
-     */
-    public void setWeapon()
-    {
-        //inventory.equiptWeapon(...)
-    }
-
-    /**
-     * todo
-     */
-    public void setArmour()
-    {
-        //inventory.equiptArmour(...)
-    }
-
+    
     /**
      * Player String representation
      * @return Player as a String

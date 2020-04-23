@@ -1,6 +1,8 @@
-import model.characters.*;
-import model.items.*;
-import java.util.*;
+import view.*;
+import controller.*;
+import model.characters.PlayerCharacter;
+import model.items.PlayerInventory;
+import javax.swing.SwingUtilities;
 
 /**
  * [description] ... [credit]
@@ -12,6 +14,42 @@ public class TurnBasedCombatGame
 {
     public static void main(String[] args)
     {
+        // Create Controllers and Enitites
+        PlayerInventory inventory = new PlayerInventory();
+        PlayerCharacter player = new PlayerCharacter("No Name", inventory);
+        PlayerController playerController = new PlayerController(player, inventory);
+
+        BattleController battleController = new BattleController();
+        ShopController shopController = new ShopController();
+
+        // Create Views
+        PlayerView playerView = new PlayerView(playerController); 
+        NamePromptView namePromptView = new NamePromptView(playerController);
+        InventoryView inventoryView = new InventoryView(playerController, battleController, shopController);
+        ShopView shopView = new ShopView(playerController, shopController);
+        BattleView battleView = new BattleView(battleController);
+
+        SwingUtilities.invokeLater(
+            new Runnable()
+            {
+                public void run()
+                {
+                    MainView game = new MainView(
+                        playerView,
+                        namePromptView,
+                        inventoryView,
+                        shopView,
+                        battleView
+                    );
+
+                    game.setVisible(true);
+                    playerView.setVisible(true);
+                }
+            }
+        );
+
+        /*
+
         PlayerInventory inv = new PlayerInventory();
         GameCharacter player = new PlayerCharacter("Matt", inv);
 
@@ -45,13 +83,13 @@ public class TurnBasedCombatGame
         // Battle
         System.out.println();
 
-        inv.addWeapon(weapon);
-        inv.addArmour(armour);
+        inv.addItem(weapon);
+        inv.addItem(armour);
         inv.equipWeapon(0);
-        inv.equipArmour(0);
+        inv.equipArmour(1);
 
         EnemyCharacter enemy = new SlimeEnemy();
-        for (int ii = 0; ii < 10; ii++)
+        while (!player.isDead() && !enemy.isDead())
         {
             System.out.println(player.toString() + "\n" + enemy.toString() + "\n");
 
@@ -61,5 +99,6 @@ public class TurnBasedCombatGame
             System.out.println("Enemy Attacks: " + (dmg = enemy.attack()));        
             player.defend(dmg);
         }
+        */
     }
 }

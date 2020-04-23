@@ -21,7 +21,7 @@ public class OgreEnemy extends EnemyCharacter
      */
     public OgreEnemy()
     {
-        super(GOLD, MAX_HEALTH, 
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
               MIN_ATTACK, MAX_ATTACK, 
               MIN_DEF, MAX_DEF);
     }

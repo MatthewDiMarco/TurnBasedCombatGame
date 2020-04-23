@@ -22,7 +22,7 @@ public class DragonEnemy extends EnemyCharacter
      */
     public DragonEnemy()
     {
-        super(GOLD, MAX_HEALTH, 
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
               MIN_ATTACK, MAX_ATTACK, 
               MIN_DEF, MAX_DEF);
     }
