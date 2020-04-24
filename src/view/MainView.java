@@ -1,38 +1,51 @@
 package view;
-import view.options.*;
+import controller.*;
 import javax.swing.*;
-import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.GridLayout;
 import java.awt.event.*;
-import java.util.*;
 
+/**
+ * The main application view from which other views stem from.
+ * Contains the main menu and displays the player's stats at all times.
+ */
 public class MainView extends JFrame
 {
     // Constants
-    public static final int WIDTH = 320;
-    public static final int HEIGHT = 180;
+    public static final int PADDING = 5;
+    public static final int WIDTH = 640;
+    public static final int HEIGHT = 320;
+    public static final int NUM_BUTTONS = 5;
 
     // Menu
-    private ArrayList<JButton> buttons;
-    private ArrayList<Option> options;
+    private JButton shopBtn;
+    private JButton changeNameBtn;
+    private JButton invBtn;
+    private JButton battleBtn;
+    private JButton exitBtn;
 
     // Other views
     private NamePromptView namePromptView;
     private InventoryView inventoryView;
-    private ShopView shopView;
     private BattleView battleView;
+    private ShopView shopView;
+
+    // Controllers
+    private PlayerController playerCon;
+    private BattleController battleCon;
 
     /**
-     * 
-     * @param inPlayerView
-     * @param inNamePromptView
+     * Constructor.
+     * @param inNamePrompt
      * @param inInventoryView
+     * @param inBattleView
+     * @param inShopView
      */
-    public MainView(PlayerView inPlayerView, 
-                    NamePromptView inNamePromptView,
+    public MainView(PlayerController inPlayerController,
+                    NamePromptView inNamePrompt,
                     InventoryView inInventoryView,
-                    ShopView inShopView,
-                    BattleView inBattleView)
+                    BattleView inBattleView,
+                    ShopView inShopView)
     {
         super("Main Menu");
 
@@ -42,70 +55,126 @@ public class MainView extends JFrame
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Views
-        namePromptView = inNamePromptView;
-        inventoryView = inInventoryView;
-        shopView = inShopView;
+        namePromptView = inNamePrompt;
+        inventoryView = inInventoryView; 
         battleView = inBattleView;
+        shopView = inShopView;
 
-        // Map operations to their respective buttons
-        buttons = new ArrayList<JButton>();
-        options = new ArrayList<Option>();
-        buttons.add(new JButton("Go to Shop")); 
-        options.add(new OptionGoShop());
-        buttons.add(new JButton("Choose Character Name")); 
-        options.add(new OptionChangeName());
-        buttons.add(new JButton("Sell or Equip Items")); 
-        options.add(new OptionInventory());
-        buttons.add(new JButton("Start Battle")); 
-        options.add(new OptionBattle());
-        buttons.add(new JButton("Exit Game")); 
-        options.add(new OptionExit());
+        // Controllers
+        playerCon = inPlayerController;
 
-        // Layout
-        JPanel contentPane = new JPanel(new BorderLayout());
-        JToolBar toolbar = new JToolBar(JToolBar.VERTICAL);
-        contentPane.add(toolbar, BorderLayout.NORTH);
-        getRootPane().setContentPane(contentPane);
+        // Buttons
+        shopBtn = new JButton("Shop");
+        changeNameBtn = new JButton("Change Name");
+        invBtn = new JButton("Equip Items");
+        battleBtn = new JButton("Start Battle");
+        exitBtn = new JButton("Exit Game");
 
-        // Give each button their doOption() method through an Action Listener
+        //
+        // LAYOUT
+        //
+
+        // Initialise master pane
+        JPanel masterPane = new JPanel();
+        masterPane.setLayout(new BoxLayout(masterPane, BoxLayout.X_AXIS));
+        masterPane.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
+
+        // Main Menu pane
+        JPanel menuPane = new JPanel(new GridLayout(NUM_BUTTONS, 1));
+        menuPane.add(shopBtn);
+        menuPane.add(changeNameBtn);
+        menuPane.add(invBtn);
+        menuPane.add(battleBtn);
+        menuPane.add(exitBtn);
+
+        // Player stats pane
+        CharacterStatsPanel playerPane = new CharacterStatsPanel(
+            playerCon.getPlayerStats()
+        );
+        
+        // Bring it all together
+        masterPane.add(menuPane);
+        masterPane.add(playerPane);
+        this.add(masterPane);
+        
+        //
+        // ACTION LISTENERS
+        //
+
         MainView view = this;
-        for (int ii = 0; ii < buttons.size(); ii++)
-        {
-            JButton btn = buttons.get(ii);
-            Option op = options.get(ii);
 
-            toolbar.add(btn);
-
-            btn.addActionListener(
-                new ActionListener()
+        // Shop button
+        shopBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
                 {
-                    public void actionPerformed(ActionEvent e)
-                    {
-                        op.doOption(view); // Open/Close some other views
-                    }
+                    view.setVisibility(false);
+                    shopView.setVisible(true);
                 }
-            );
-        }
+            }
+        );
+
+        // Name prompt button
+        changeNameBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    view.setVisibility(false);
+                    namePromptView.setVisible(true);
+                }
+            }
+        );
+
+        // Inventory button
+        invBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    view.setVisibility(false);
+                    inventoryView.setVisible(true);
+                }
+            }
+        );
+
+        // Start Battle button
+        battleBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    view.setVisibility(false);
+                    view.setVisible(false);
+                    battleView.setVisible(true);
+                }
+            }
+        );
+
+        // Exit button
+        exitBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    view.closeAll(); // close
+                }
+            }
+        );
 
         // Fit Window
         pack();
     }
 
     /**
-     * Disable/Enables the visibility of the other views.
-     */
-    public void setVisibility(boolean set)
-    {
-        namePromptView.setVisible(set);
-        inventoryView.setVisible(set);
-        shopView.setVisible(set);
-    }
-
-    /**
      * Close everything.
-     * https://stackoverflow.com/questions/258099/how-to-close-a-java-swing-application-from-the-code
+     * 
+     * Credit:
+     * stackoverflow.com/questions/258099/
+     * how-to-close-a-java-swing-application-from-the-code
      */
-    public void closeAll()
+    private void closeAll()
     {
         super.processWindowEvent(
             new WindowEvent(
@@ -115,43 +184,14 @@ public class MainView extends JFrame
     }
 
     /**
-     * Accessor for the name promp
+     * Hides/Shows all the views depending on the value of b.
+     * @param b Visibility
      */
-    public NamePromptView getNamePrompt()
-    {
-        return namePromptView;
+    private void setVisibility(boolean b)
+    { 
+        namePromptView.setVisible(b);
+        inventoryView.setVisible(b);
+        shopView.setVisible(b);
+        battleView.setVisible(b);
     }
-
-    /**
-     * Accessor for the inventory view.
-     */
-    public InventoryView getInventoryView()
-    {
-        return inventoryView;
-    }
-
-    /**
-     * Accessor for the inventory view.
-     */
-    public ShopView getShopView()
-    {
-        return shopView;
-    }
-
-    /**
-     * Accessor for the battle view.
-     */
-    public BattleView getBattleView()
-    {
-        return battleView;
-    }
-
-    /*
-    public void restoreMainMenu() // event
-    {
-        this.toggleButtons(); // make interactive again
-        this.namePromptView.setVisibl(false);
-        // same w/ rest of views...
-    }
-    */
 }

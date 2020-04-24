@@ -1,80 +1,153 @@
 package view;
 import controller.BattleController;
+import controller.PlayerController;
 import javax.swing.*;
-import java.awt.Graphics;
+import java.awt.GridLayout;
 import java.awt.Dimension;
+import java.awt.event.*;
 import java.util.*;
 
+/**
+ * This view is responsible for displaying player and opponent stats, showing
+ * battle messages as the fight continues, and letting the player make choices.
+ */
 public class BattleView extends JFrame
 {
     // Constants
-    public static final int WIDTH = 320;
-    public static final int HEIGHT = 120;
+    public static final int WIDTH = 640;
+    public static final int HEIGHT = 320;
 
-    // Stats
-    private String enemySpecies;
-    private String enemyHealth;
-    private String enemyGold;
-    private String enemyAttack;
-    private String enemyDefence;
+    // Widgets
+    private CharacterStatsPanel playerStats;
+    private CharacterStatsPanel enemyStats;
+    private JList<String> messages;
+    private JButton attackBtn;
+    private JButton usePotionBtn;
 
     // Controllers
-    BattleController battleCon;
+    private BattleController battleCon;
+    private PlayerController playerCon;
+
     /**
-     * 
+     * Constructor.
      * @param inBattleController
+     * @param inPlayerController
      */
-    public BattleView(BattleController inBattleController)
+    public BattleView(BattleController inBattleController, 
+                      PlayerController inPlayerController) 
     {
         super("Battle");
 
         // Basics
         setPreferredSize(new Dimension(WIDTH, HEIGHT));
         setLocationRelativeTo(null);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
         // Controllers
-        battleCon = inBattleController; 
+        battleCon = inBattleController;
+        playerCon = inPlayerController;
 
-        // Fit winodow
+        // Initialise Widgets
+        playerStats = new CharacterStatsPanel(playerCon.getPlayerStats());
+        enemyStats = new CharacterStatsPanel(battleCon.getEnemyStats());
+        messages = new JList<String>();
+        messages.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        attackBtn = new JButton("Attack");
+        usePotionBtn = new JButton("Use Potion");
+
+        //
+        // LAYOUT
+        //
+
+        // Initialise master pane (everything in the frame stems from this)
+        JPanel masterPane = new JPanel();
+        masterPane.setLayout(new BoxLayout(masterPane, BoxLayout.Y_AXIS));
+        masterPane.setBorder(
+            BorderFactory.createEmptyBorder(
+                MainView.PADDING, MainView.PADDING, MainView.PADDING, MainView.PADDING
+            )
+        );
+
+        // Enemy vs Player panel
+        // Displays player/enemy stats side by side
+        JPanel vsPane = new JPanel(new GridLayout(1, 2));
+        vsPane.add(playerStats);
+        vsPane.add(enemyStats);
+
+        // Button panel
+        JPanel buttonsPane = new JPanel(new GridLayout(2, 1));
+        buttonsPane.add(attackBtn);     // Attack
+        buttonsPane.add(usePotionBtn);  // Use Potion
+
+        // Message feed
+        // Game messages are appended here (e.g. player healed/attacked etc.)
+        JPanel masterFeedPane = new JPanel(new GridLayout(1, 2));
+        JScrollPane messageFeedPane = new JScrollPane(messages);
+        messageFeedPane.setPreferredSize(new Dimension());
+
+        // Connect Feed and Button panels
+        masterFeedPane.add(buttonsPane);
+        masterFeedPane.add(messageFeedPane);
+
+        // Bring it all together
+        masterPane.add(vsPane);             // player vs enemy
+        masterPane.add(masterFeedPane);     // Buttons | Messages
+        this.add(masterPane);
+
+        //
+        // ACTIONS LISTENERS
+        //
+
+        // Attack button
+        attackBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    // Talk to controller
+                }
+            }
+        );
+
+        // Use a potion button
+        attackBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    // Talk to controller
+                }
+            }
+        );
+
+        // Show battle messages
+        showMessages(battleCon.getMessages());
+
+        // Fit window
         pack();
-
-        showEnemyStats(battleCon.getEnemyStats());
     }
 
     /**
-     * Draw the stats
+     * Update the messages list
      */
-    public void paint(Graphics g)
+    public void showMessages(Vector<String> msgs)
     {
-        final int SPACING = 20;
-        final int COL_OFFSET = 6;
-
-        // Col 1: Descriptors
-        g.drawString("Name:     ", SPACING, SPACING);
-        g.drawString("Health:   ", SPACING, SPACING * 2);
-        g.drawString("Gold:     ", SPACING, SPACING * 3);
-        g.drawString("Attack:   ", SPACING, SPACING * 4);
-        g.drawString("Defence:  ", SPACING, SPACING * 5);
-
-        // Col 2: Data
-        g.drawString(enemySpecies, SPACING * COL_OFFSET, SPACING);
-        g.drawString(enemyHealth, SPACING * COL_OFFSET, SPACING * 2);
-        g.drawString(enemyGold, SPACING * COL_OFFSET, SPACING * 3);
-        g.drawString(enemyAttack, SPACING * COL_OFFSET, SPACING * 4);
-        g.drawString(enemyDefence, SPACING * COL_OFFSET, SPACING * 5);
+        messages.setListData(msgs);
     }
 
     /**
-     * Assign values to the enemy's stats.
-     * @param stats A list of String enemy stats.
+     * Update the player stats
      */
-    private void showEnemyStats(List<String> stats)
+    public void showPlayerStats(List<String> inPlayerStats)
     {
-        enemySpecies = stats.get(0); 
-        enemyHealth = stats.get(1);
-        enemyGold = stats.get(2);
-        enemyAttack = stats.get(3);
-        enemyDefence = stats.get(4);
+        playerStats.showCharacterStats(inPlayerStats);
+    }
+
+    /**
+     * Update the enemy stats
+     */
+    public void showEnemyStats(List<String> inEnemyStats) 
+    {
+        enemyStats.showCharacterStats(inEnemyStats);
     }
 }

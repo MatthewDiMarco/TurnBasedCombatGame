@@ -4,13 +4,15 @@ import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.event.*;
 
+/**
+ * Prompt for changin the player's name.
+ */
 public class NamePromptView extends JFrame
 {
     // Constants
-    private static final int PADDING = 10;
     private static final int COLS = 30;
-    public static final int WIDTH = 480;
-    public static final int HEIGHT = 120;
+    public static final int WIDTH = 320;
+    public static final int HEIGHT = 80;
 
     // Widgets
     private JTextField nameWidget;
@@ -21,7 +23,7 @@ public class NamePromptView extends JFrame
     private PlayerController playerCon;
 
     /**
-     * 
+     * Constructor.
      * @param inPlayerController
      */
     public NamePromptView(PlayerController inPlayerController)
@@ -37,26 +39,42 @@ public class NamePromptView extends JFrame
         playerCon = inPlayerController; 
 
         // Initialise Widgets
-        nameWidget = new JTextField(COLS);
+        nameWidget = new JTextField(COLS); // record new name here
         applyBtn = new JButton("Apply");
         closeBtn = new JButton("Close");
 
-        // Layout
-        JPanel panel = new JPanel();
-        panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-        panel.add(Box.createHorizontalGlue());
-        panel.add(applyBtn);
-        panel.add(Box.createRigidArea(new Dimension(PADDING, 0)));
-        panel.add(closeBtn);
+        //
+        // LAYOUT
+        //
 
-        JPanel contentPane = new JPanel();
-        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
-        contentPane.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
-        contentPane.add(nameWidget);
-        contentPane.add(Box.createRigidArea(new Dimension(0, PADDING)));
-        contentPane.add(panel);
+        // Initialise master pane
+        JPanel masterPane = new JPanel();
+        masterPane.setLayout(new BoxLayout(masterPane, BoxLayout.Y_AXIS));
+        masterPane.setBorder(
+            BorderFactory.createEmptyBorder(
+                MainView.PADDING, MainView.PADDING, MainView.PADDING, MainView.PADDING
+            )
+        );
 
-        getRootPane().setContentPane(contentPane);
+        // Button pane
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(applyBtn);
+        buttonPane.add(Box.createRigidArea(new Dimension(MainView.PADDING, 0)));
+        buttonPane.add(closeBtn);
+
+        // Bring it all together
+        masterPane.add(nameWidget);
+        masterPane.add(Box.createRigidArea(new Dimension(0, MainView.PADDING)));
+        masterPane.add(buttonPane);
+        this.add(masterPane);
+
+        //
+        // ACTION LISTENERS
+        //
+
+        NamePromptView npv = this;
 
         // Apply Button
         applyBtn.addActionListener(
@@ -64,9 +82,19 @@ public class NamePromptView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    // controller stuff
-                    System.out.println("*Name Changed*");
-                    JOptionPane.showMessageDialog(null, "Name Changed");
+                    String newName = nameWidget.getText();
+                    try
+                    {
+                        playerCon.changePlayerName(newName);
+                        npv.dispose();
+                    }
+                    catch (IllegalArgumentException e2)
+                    {
+                        // Controller will let us know of problems
+                        JOptionPane.showMessageDialog(
+                            null, e2.getMessage()
+                        );
+                    }
                 }
             }
         );
@@ -77,9 +105,7 @@ public class NamePromptView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    // controller stuff
-                    System.out.println("*Closing*");
-                    setVisible(false);
+                    npv.dispose();
                 }
             }
         );

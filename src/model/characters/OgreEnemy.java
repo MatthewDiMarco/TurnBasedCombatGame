@@ -1,9 +1,12 @@
 package model.characters;
+import model.items.CharacterInventory;
 import java.util.*;
+
 
 /**
  * Ogre enemy type.
- * Special abilities: 20% Chance it will attack twice in a row for a given attack.
+ * Special abilities: 20% Chance it will attack twice in a row for a given 
+ * attack.
  */
 public class OgreEnemy extends EnemyCharacter
 {
@@ -18,26 +21,17 @@ public class OgreEnemy extends EnemyCharacter
 
     /**
      * Constructor.
+     * @param inInventory Inventory containing attack/defence usage.
      */
-    public OgreEnemy()
+    public OgreEnemy(CharacterInventory inInventory)
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
-              MIN_ATTACK, MAX_ATTACK, 
-              MIN_DEF, MAX_DEF);
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, inInventory);
     }
 
     /**
-     * Ogre String representation
-     * @return Ogre as a String
-     */
-    @Override
-    public String toString()
-    {
-        return SPECIES_NAME + ", " + super.toString();
-    }
-
-    /**
-     * Define this species' special abilities here
+     * Define this species' special abilities here.
+     * Special abilities: 20% Chance it will attack twice in a row for a given 
+     * attack.
      */
     @Override
     protected int modifier(Random randGenerator, int damage)
@@ -45,7 +39,7 @@ public class OgreEnemy extends EnemyCharacter
         // 20% to attack twice in a row
         if (randGenerator.nextInt(100) < 20)
         {
-            damage += randGenerator.nextInt(maxAttack + 1 - minAttack) + minAttack;
+            damage += inventory.useWeapon(randGenerator);
         }
 
         return damage;

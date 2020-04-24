@@ -4,38 +4,32 @@ import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.util.*;
 
+/**
+ * Responsible for enabling interaction between the player and their items, 
+ * including equiping and using
+ */
 public class InventoryView extends JFrame
 {
     // Constants
-    private static final int PADDING = 20;
-    public static final int WIDTH = 480;
-    public static final int HEIGHT = 240;
+    public static final int WIDTH = 320;
+    public static final int HEIGHT = 180;
 
     // Widgets
     private JList<String> items;
     private JButton equipBtn;
     private JButton useBtn;
-    private JButton sellBtn;
     private JButton closeBtn;
 
     // Controllers
     private PlayerController playerCon;
-    private BattleController battleCon;
-    private ShopController shopCon;
-
-    // Other
-    private boolean inBattle;
 
     /**
-     * 
+     * Constructor.
      * @param inPlayerController
-     * @param inBattleController
-     * @param inShopController
      */
-    public InventoryView(PlayerController inPlayerController,
-                         BattleController inBattleController,
-                         ShopController inShopController)
+    public InventoryView(PlayerController inPlayerController)
     {
         super("Player Inventory");
 
@@ -46,32 +40,50 @@ public class InventoryView extends JFrame
 
         // Controllers
         playerCon = inPlayerController; 
-        battleCon = inBattleController; 
-        shopCon = inShopController; 
 
         // Initialise Widgets
         items = new JList<String>();
         items.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         equipBtn = new JButton("Equip");
         useBtn = new JButton("Use");
-        sellBtn = new JButton("Sell");
         closeBtn = new JButton("Close");
 
-        // Layout
-        JScrollPane scrollPane = new JScrollPane(items);
+        //
+        // LAYOUT
+        //
+
+        // Initialise master pane (everything in the frame stems from this)
+        JPanel masterPane = new JPanel();
+        masterPane.setLayout(new BoxLayout(masterPane, BoxLayout.Y_AXIS));
+        masterPane.setBorder(
+            BorderFactory.createEmptyBorder(
+                MainView.PADDING, MainView.PADDING, MainView.PADDING, MainView.PADDING
+            )
+        );
+
+        // Inventory pane
+        JPanel invPane = new JPanel(new BorderLayout());
         JToolBar toolbar = new JToolBar();
-
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.add(toolbar, BorderLayout.NORTH);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
-
         toolbar.add(equipBtn);
         toolbar.add(useBtn);
-        toolbar.add(sellBtn);
-        toolbar.addSeparator(new Dimension(PADDING, PADDING));
-        toolbar.add(closeBtn);
+        JScrollPane itemPane = new JScrollPane(items);
+        invPane.add(toolbar, BorderLayout.NORTH);
+        invPane.add(itemPane, BorderLayout.CENTER);
 
-        getRootPane().setContentPane(contentPane);
+        // Button pane (close btn)
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(closeBtn);
+
+        // Bring it all together
+        masterPane.add(invPane);
+        masterPane.add(buttonPane);
+        this.add(masterPane);
+
+        //
+        // ACTION LISTENERS
+        //
 
         // Equip Button
         equipBtn.addActionListener(
@@ -79,17 +91,21 @@ public class InventoryView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    if (!inBattle) // todo: Change this so controller passes an exception instead if player is fighting
+                    int itemIndex = items.getSelectedIndex();
+                    if (itemIndex != -1)
                     {
-                        int itemIndex = items.getSelectedIndex();
-                        if (itemIndex != -1)
+                        // Try equiping item
+                        try
                         {
                             playerCon.equipItem(itemIndex);
                         }
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null, "You cannot equip items in battle");
+                        catch (IllegalArgumentException e2)
+                        {
+                            // Controller will let us know of problems
+                            JOptionPane.showMessageDialog(
+                                null, e2.getMessage()
+                            );
+                        }
                     }
                 }
             }
@@ -101,33 +117,21 @@ public class InventoryView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    if (inBattle)
+                    int itemIndex = items.getSelectedIndex();
+                    if (itemIndex != -1)
                     {
-                        //talk to battle controller
-                        System.out.println("*use*");
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null, "You can only use items in battle");
-                    }
-                }
-            }
-        );
-
-        // Sell Button
-        sellBtn.addActionListener(
-            new ActionListener()
-            {
-                public void actionPerformed(ActionEvent e)
-                {
-                    if (!inBattle)
-                    {
-                        // controller stuff
-                        System.out.println("*sell*");
-                    }
-                    else
-                    {
-                        JOptionPane.showMessageDialog(null, "You must visit the shop to sell items");
+                        // Try using
+                        try
+                        {
+                            playerCon.prepPotion(itemIndex);
+                        }
+                        catch (IllegalArgumentException e2)
+                        {
+                            // Controller will let us know of problems
+                            JOptionPane.showMessageDialog(
+                                null, e2.getMessage()
+                            );
+                        }
                     }
                 }
             }
@@ -139,27 +143,22 @@ public class InventoryView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    System.out.println("*Closing*");
                     setVisible(false);
                 }
             }
         );
 
-        // Default
-        inBattle = false;
-        showInventory();
+        showInventory(playerCon.getInventory());
 
         // Fit window
         pack();
     }
 
-    public void inBattle(boolean bool)
+    /**
+     * Show the inventory items
+     */
+    public void showInventory(Vector<String> inv)
     {
-        inBattle = bool;
-    }
-
-    public void showInventory()
-    {
-        items.setListData(playerCon.getInventory());
+        items.setListData(inv);
     }
 }

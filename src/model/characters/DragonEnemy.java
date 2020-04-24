@@ -1,4 +1,5 @@
 package model.characters;
+import model.items.CharacterInventory;
 import java.util.*;
 
 /**
@@ -19,40 +20,31 @@ public class DragonEnemy extends EnemyCharacter
 
     /**
      * Constructor.
+     * @param inInventory Inventory containing attack/defence usage.
      */
-    public DragonEnemy()
+    public DragonEnemy(CharacterInventory inInventory)
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
-              MIN_ATTACK, MAX_ATTACK, 
-              MIN_DEF, MAX_DEF);
-    }
-
-    /**
-     * Dragon String representation
-     * @return Dragon as a String
-     */
-    @Override
-    public String toString()
-    {
-        return SPECIES_NAME + ", " + super.toString();
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, inInventory);
     }
 
     /**
      * Define this species' special abilities here
+     * Special abilities: 25% chance the damage inflicted will double, or 10%
+     * chance the dragon will recover 10 health.
      */
     @Override
     protected int modifier(Random randGenerator, int damage)
     {
-        // 25% chance of double damage
-        if (randGenerator.nextInt(100) < 25)
+        int result = randGenerator.nextInt(100); 
+
+        // 25% chance of (only) double damage
+        if (result < 25)
         {
             damage *= 2;
         }
-
-        // 10% chance of self-heal
-        if (randGenerator.nextInt(100) < 10)
+        else if (result < 10) // 10% chance of (only) self-heal
         {
-            setHealth(currHealth + 10);
+            this.setHealth(currHealth + 10);
         }
 
         return damage;

@@ -2,32 +2,43 @@ package view;
 import controller.*;
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.event.*;
+import java.util.*;
 
+/**
+ * This view is responsible for displaying all shop items and facilitating
+ * transactions with the player.
+ */
 public class ShopView extends JFrame
 {
     // Constants
-    private static final int PADDING = 20;
-    public static final int WIDTH = 480;
-    public static final int HEIGHT = 240;
+    public static final int WIDTH = 640;
+    public static final int HEIGHT = 320;
 
     // Widgets
-    private JList<String> items;
+    private JList<String> products;
+    private JList<String> playerItems;
     private JButton buyBtn;
+    private JButton sellBtn;
+    private JButton itemsBtn;
+    private JButton enchantmentsBtn;
     private JButton closeBtn;
 
     // Controllers
     private PlayerController playerCon;
     private ShopController shopCon;
 
+    private boolean enchantmentMode;
+
     /**
-     * 
+     * Constructor.
      * @param inPlayerController
      * @param inShopController
      */
-    public ShopView(PlayerController inPlayerController,
-                    ShopController inShopController)
+    public ShopView(ShopController inShopController,
+                    PlayerController inPlayerController)
     {
         super("Shop");
 
@@ -41,24 +52,69 @@ public class ShopView extends JFrame
         shopCon = inShopController; 
 
         // Initialise Widgets
-        items = new JList<String>();
-        items.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        products = new JList<String>();
+        products.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        playerItems = new JList<String>();
+        playerItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         buyBtn = new JButton("Buy");
+        sellBtn = new JButton("Sell");
+        itemsBtn = new JButton("Items");
+        enchantmentsBtn = new JButton("Enchantments");
         closeBtn = new JButton("Close");
 
-        // Layout
-        JScrollPane scrollPane = new JScrollPane(items);
-        JToolBar toolbar = new JToolBar();
+        //
+        // LAYOUT
+        //
 
-        JPanel contentPane = new JPanel(new BorderLayout());
-        contentPane.add(toolbar, BorderLayout.NORTH);
-        contentPane.add(scrollPane, BorderLayout.CENTER);
+        // Initialise master pane (everything in the frame stems from this)
+        JPanel masterPane = new JPanel();
+        masterPane.setLayout(new BoxLayout(masterPane, BoxLayout.Y_AXIS));
+        masterPane.setBorder(
+            BorderFactory.createEmptyBorder(
+                MainView.PADDING, MainView.PADDING, MainView.PADDING, MainView.PADDING
+            )
+        );
 
-        toolbar.add(buyBtn);
-        toolbar.addSeparator(new Dimension(PADDING, PADDING));
-        toolbar.add(closeBtn);
+        // Shop Pane (for buying items and enchantments)
+        JPanel shopPane = new JPanel(new BorderLayout());
+        JToolBar shopToolbar = new JToolBar();
+        shopToolbar.add(buyBtn);
+        shopToolbar.addSeparator(new Dimension(MainView.PADDING, MainView.PADDING));
+        shopToolbar.add(itemsBtn);
+        shopToolbar.add(enchantmentsBtn); 
+        JScrollPane shopItemPane = new JScrollPane(products);
+        shopPane.add(shopToolbar, BorderLayout.NORTH);
+        shopPane.add(shopItemPane, BorderLayout.CENTER);
 
-        getRootPane().setContentPane(contentPane);
+        // Player Inventory Pane (for selling items)
+        JPanel playerInvPane = new JPanel(new BorderLayout());
+        JToolBar playerInvToolbar = new JToolBar();
+        playerInvToolbar.add(sellBtn);  
+        JScrollPane playerItemPane = new JScrollPane(playerItems);
+        playerInvPane.add(playerInvToolbar, BorderLayout.NORTH);
+        playerInvPane.add(playerItemPane, BorderLayout.CENTER);
+
+        // Merge Player and Shop Panes
+        JPanel tradePane = new JPanel(new GridLayout(1, 2));
+        tradePane.add(shopPane);
+        tradePane.add(playerInvPane);
+
+        // Button pane (close btn)
+        JPanel buttonPane = new JPanel();
+        buttonPane.setLayout(new BoxLayout(buttonPane, BoxLayout.X_AXIS));
+        buttonPane.add(Box.createHorizontalGlue());
+        buttonPane.add(closeBtn);
+
+        // Bring it all together
+        masterPane.add(tradePane);
+        masterPane.add(buttonPane);
+        this.add(masterPane);
+
+        //
+        // ACTION LISTENERS
+        //
+
+        ShopView view = this;
 
         // Buy Button
         buyBtn.addActionListener(
@@ -66,10 +122,60 @@ public class ShopView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    int itemIndex = items.getSelectedIndex();
+                    int itemIndex = products.getSelectedIndex();
                     if (itemIndex != -1)
                     {
-                        //do something
+                        // Try buying
+                        try
+                        {
+                            // do stuff
+                        }
+                        catch (IllegalArgumentException e2)
+                        {
+                            // Controller will let us know of problems
+                            JOptionPane.showMessageDialog(
+                                null, e2.getMessage()
+                            );
+                        }
+                    }
+                }
+            }
+        );
+
+        // Items Button
+        itemsBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    view.showProduct(shopCon.getShopItems());
+                    enchantmentMode = false;
+                }
+            }
+        );
+
+        // Enchantments Button
+        enchantmentsBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    view.showProduct(shopCon.getEnchantments());
+                    enchantmentMode = true;
+                }
+            }
+        );
+
+        // Sell Button
+        sellBtn.addActionListener(
+            new ActionListener()
+            {
+                public void actionPerformed(ActionEvent e)
+                {
+                    int itemIndex = playerItems.getSelectedIndex();
+                    if (itemIndex != -1)
+                    {
+                        // do stuff
                     }
                 }
             }
@@ -81,21 +187,32 @@ public class ShopView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    System.out.println("*Closing*");
                     setVisible(false);
                 }
             }
         );
 
-        // Default
-        showItems();
+        // Load stuff
+        showProduct(shopCon.getShopItems());
+        showPlayerInv(playerCon.getInventory());
 
         // Fit window
         pack();
     }
 
-    public void showItems()
+    /**
+     * Show the products (items or enchantments)
+     */
+    public void showProduct(Vector<String> inProducts)
     {
-        items.setListData(shopCon.getItems());
+        products.setListData(inProducts);
+    }
+
+    /**
+     * Show the player's inventory (for selling)
+     */
+    public void showPlayerInv(Vector<String> inv)
+    {
+        playerItems.setListData(inv);
     }
 }

@@ -8,7 +8,7 @@ public class ShopController
         //
     }
 
-    public Vector<String> getItems()
+    public Vector<String> getShopItems()
     {
         //temp
         Vector<String> items = new Vector<String>();
@@ -17,5 +17,16 @@ public class ShopController
         items.add("3");
 
         return items;
+    }
+
+    public Vector<String> getEnchantments()
+    {
+        //temp
+        Vector<String> enchantments = new Vector<String>();
+        enchantments.add("+2");
+        enchantments.add("+5");
+        enchantments.add("fire or some bullshit");
+
+        return enchantments;
     }
 }

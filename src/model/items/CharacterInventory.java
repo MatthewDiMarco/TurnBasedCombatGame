@@ -4,33 +4,41 @@ import java.util.*;
 /**
  * [description]
  */
-public class PlayerInventory extends Inventory 
+public class CharacterInventory extends Inventory 
 {
     public static final int CAPACITY = 15;
     private DefenceItem currArmour;
     private DamageItem currWeapon;
     private ConsumableItem currPotion;
-    private Random generator;
 
-    public PlayerInventory() 
+    public CharacterInventory() 
     {
         super();
         currArmour = null;
         currWeapon = null;
         currPotion = null; 
-        generator = new Random();
     }
 
-    public int useWeapon()
+    public int useWeapon(Random generator)
     {
-        //todo NoEquipedItemException
-        return currWeapon.getEffect(generator);
+        int dmg = 0;
+        if (currWeapon != null)
+        {
+            dmg = currWeapon.getEffect(generator);
+        }
+
+        return dmg;
     }
 
-    public int useArmour()
+    public int useArmour(Random generator)
     {
-        //todo NoEquipedItemException
-        return currArmour.getEffect(generator);
+        int def = 0;
+        if (currArmour != null)
+        {
+            currArmour.getEffect(generator);
+        }
+
+        return def;
     }
 
     /**
@@ -40,7 +48,7 @@ public class PlayerInventory extends Inventory
      * less 0 if it's a damage potion.
      * @return The potion's effect as an integer.
      */
-    public int usePotion()
+    public int usePotion(Random generator)
     {
         int effect = 0;
         if (currPotion != null)
@@ -58,28 +66,6 @@ public class PlayerInventory extends Inventory
         items.remove(currPotion);
         currPotion = null;
         return effect;
-    }
-
-    public String getCurrAttackRange()
-    {
-        String range = "0 - 0";
-        if (currWeapon != null)
-        {
-            range = currWeapon.getEffectRange();
-        }
-        
-        return range;
-    }
-
-    public String getCurrDefenceRange()
-    {
-        String range = "0 - 0";
-        if (currWeapon != null)
-        {
-            range = currArmour.getEffectRange();
-        }
-        
-        return range;
     }
 
     public void equipWeapon(int index)
@@ -117,17 +103,39 @@ public class PlayerInventory extends Inventory
             throw new IllegalArgumentException("Not a potion");
         }
     }
+    
+    public String getCurrAttackRange()
+    {
+        String range = "0 - 0";
+        if (currWeapon != null)
+        {
+            range = currWeapon.getEffectRange();
+        }
+        
+        return range;
+    }
+
+    public String getCurrDefenceRange()
+    {
+        String range = "0 - 0";
+        if (currWeapon != null)
+        {
+            range = currArmour.getEffectRange();
+        }
+        
+        return range;
+    }
 
     @Override
     public void addItem(Item inItem)
     {
-        //todo exception here
         if (numItems < CAPACITY)
         {
             super.addItem(inItem);
         }
         else
         {
+            //todo exception here
             throw new IllegalArgumentException("Inventory full");
         }
     } 

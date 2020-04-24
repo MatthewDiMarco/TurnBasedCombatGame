@@ -1,4 +1,5 @@
 package model.characters;
+import model.items.CharacterInventory;
 import java.util.*;
 
 /**
@@ -16,29 +17,20 @@ public class SlimeEnemy extends EnemyCharacter
     public static final int MAX_ATTACK      = 5;
     public static final int MIN_DEF         = 0;
     public static final int MAX_DEF         = 2;
-
+    
     /**
      * Constructor.
+     * @param inInventory Inventory containing attack/defence usage.
      */
-    public SlimeEnemy()
+    public SlimeEnemy(CharacterInventory inInventory)
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
-              MIN_ATTACK, MAX_ATTACK, 
-              MIN_DEF, MAX_DEF);
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, inInventory);
     }
 
     /**
-     * Slime String representation
-     * @return Slime as a String
-     */
-    @Override
-    public String toString()
-    {
-        return SPECIES_NAME + ", " + super.toString();
-    }
-
-    /**
-     * Define this species' special abilities here
+     * Define this species' special abilities here.
+     * Special abilities: 20% chance that when it's attack() method is called, 
+     * there will be no damage (i.e. zero effect on opponent).
      */
     @Override
     protected int modifier(Random randGenerator, int damage)

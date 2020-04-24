@@ -1,14 +1,14 @@
 package controller;
-import model.characters.PlayerCharacter;
+import model.characters.GameCharacter;
 import model.items.*;
 import java.util.*;
 
 public class PlayerController 
 {
-    PlayerCharacter player;
-    PlayerInventory inv;
+    GameCharacter player;
+    CharacterInventory inv;
 
-    public PlayerController(PlayerCharacter inPlayer, PlayerInventory inInventory)
+    public PlayerController(GameCharacter inPlayer, CharacterInventory inInventory)
     {
         player = inPlayer;
         inv = inInventory;        
@@ -37,7 +37,22 @@ public class PlayerController
         return items;
     }
 
+    public void changePlayerName(String newName)
+    {
+        player.setName(newName);
+    }
+
     public void equipItem(int index)
+    {
+        //
+    }
+
+    public void sellItem(int index)
+    {
+        //
+    }
+
+    public void prepPotion(int index)
     {
         //
     }

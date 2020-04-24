@@ -1,4 +1,5 @@
 package model.characters;
+import model.items.CharacterInventory;
 import java.util.*;
 
 /**
@@ -19,26 +20,17 @@ public class GoblinEnemy extends EnemyCharacter
 
     /**
      * Constructor.
+     * @param inInventory Inventory containing attack/defence usage.
      */
-    public GoblinEnemy()
+    public GoblinEnemy(CharacterInventory inInventory)
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
-              MIN_ATTACK, MAX_ATTACK, 
-              MIN_DEF, MAX_DEF);
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, inInventory);
     }
 
     /**
-     * Goblin String representation
-     * @return Goblin as a String
-     */
-    @Override
-    public String toString()
-    {
-        return SPECIES_NAME + ", " + super.toString();
-    }
-
-    /**
-     * Define this species' special abilities here
+     * Define this species' special abilities here.
+     * Goblin Special abilities: 50% chance that it's attacks will impose an 
+     * extra 3 damage in addition to the base damage.
      */
     @Override
     protected int modifier(Random randGenerator, int damage)
