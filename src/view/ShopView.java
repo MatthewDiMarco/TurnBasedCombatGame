@@ -59,7 +59,7 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
         playerItems = new JList<String>();
         playerItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         buyBtn = new JButton("Buy");
-        sellBtn = new JButton("Sell");
+        sellBtn = new JButton("Sell for 50% G");
         itemsBtn = new JButton("Items");
         enchantmentsBtn = new JButton("Enchantments");
         closeBtn = new JButton("Close");
@@ -152,7 +152,7 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    view.showProduct(shopCon.getShopItems());
+                    view.showItems(shopCon.getShopItems());
                     enchantmentMode = false;
                 }
             }
@@ -164,7 +164,7 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    view.showProduct(shopCon.getEnchantments());
+                    view.showEnchantments(shopCon.getEnchantments());
                     enchantmentMode = true;
                 }
             }
@@ -196,7 +196,7 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
             }
         );
 
-        showProduct(shopCon.getShopItems());
+        showItems(shopCon.getShopItems());
         showPlayerInv(playerCon.getInventory().getItems());
         playerCon.getInventory().addUpdateObserver(this);
 
@@ -207,9 +207,20 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
     /**
      * Show the products (items or enchantments)
      */
-    public void showProduct(Vector<String> inProducts)
+    public void showItems(List<Item> inProducts)
     {
-        products.setListData(inProducts);
+        Vector<String> inv = new Vector<String>();
+        for (Item ii : inProducts)
+        {
+            inv.add(ii.toString());
+        }
+
+        products.setListData(inv);
+    }
+
+    public void showEnchantments(Vector<String> inEnchantments)
+    {
+        products.setListData(inEnchantments);
     }
 
     /**

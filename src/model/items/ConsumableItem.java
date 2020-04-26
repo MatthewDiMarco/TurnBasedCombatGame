@@ -53,8 +53,6 @@ public class ConsumableItem extends Item
             effect = "Damage";
         }
 
-        return super.toString() + ", " + 
-               minEffect + "-" + maxEffect + " " + effect + ", " +
-               "COST: " + getCost() + "G"; 
+        return super.toString() + " " + effect;
     }
 }

@@ -1,32 +1,37 @@
 package controller;
+import model.items.Inventory;
+import model.items.Item;
+import model.items.Enchantment;
 import java.util.*;
 
 public class ShopController 
 {
+    private Inventory shopItems;
+    private Vector<String> enchantments;
+
     public ShopController()
     {
-        //
+        shopItems = null;
+        enchantments = new Vector<String>();
+        enchantments.add("5G  Damage +2");
+        enchantments.add("10G  Damage +5");
+        enchantments.add("20G  Fire Damage");
+        enchantments.add("10G  Power-Up");
     }
 
-    public Vector<String> getShopItems()
+    public void loadShop(String fileName)
     {
-        //temp
-        Vector<String> items = new Vector<String>();
-        items.add("1");
-        items.add("2");
-        items.add("3");
+        ShopLoader loader = ShopFactory.makeShopLoader(fileName);
+        shopItems = loader.load(fileName);
+    }
 
-        return items;
+    public List<Item> getShopItems()
+    {
+        return shopItems.getItems();
     }
 
     public Vector<String> getEnchantments()
     {
-        //temp
-        Vector<String> enchantments = new Vector<String>();
-        enchantments.add("+2");
-        enchantments.add("+5");
-        enchantments.add("fire or some bullshit");
-
         return enchantments;
     }
 }

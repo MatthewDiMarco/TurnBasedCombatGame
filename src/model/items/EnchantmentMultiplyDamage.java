@@ -1,11 +1,11 @@
 package model.items;
 import java.util.*;
 
-public class MultiplyDamageEnchantment extends Enchantment
+public class EnchantmentMultiplyDamage extends Enchantment
 {
     private double factor;
 
-    public MultiplyDamageEnchantment(DamageItem inNext, String inName, int inCost, 
+    public EnchantmentMultiplyDamage(DamageItem inNext, String inName, int inCost, 
                                      String inDmgType, double inFactor)
     {
         super(inNext, inName, inCost, 1, 1, inDmgType);

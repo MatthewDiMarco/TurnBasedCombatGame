@@ -1,9 +1,9 @@
 package model.items;
 import java.util.*;
 
-public class AddDamageEnchantment extends Enchantment
+public class EnchantmentAddDamage extends Enchantment
 {
-    public AddDamageEnchantment(DamageItem inNext, String inName, int inCost, 
+    public EnchantmentAddDamage(DamageItem inNext, String inName, int inCost, 
                                 int inMinEff, int inMaxEff, 
                                 String inDmgType)
     {

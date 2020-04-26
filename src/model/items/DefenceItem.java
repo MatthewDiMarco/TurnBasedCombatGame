@@ -36,8 +36,6 @@ public class DefenceItem extends Item
     @Override
     public String toString()
     {
-        return super.toString() + ", " + 
-               minEffect + "-" + maxEffect + " Defence, " +
-               "made from " + material + ", COST: " + getCost() + "G";
+        return super.toString() + " Defence";
     }
 }

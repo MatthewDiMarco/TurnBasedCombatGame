@@ -41,6 +41,7 @@ public class TurnBasedCombatGame
         PlayerController playerController = new PlayerController(player, inventory);
         BattleController battleController = new BattleController(); // give player
         ShopController shopController = new ShopController(); // give player
+        shopController.loadShop("resources/shopdata.csv");
 
         // Create Views
         NamePromptView namePromptView = new NamePromptView(playerController);

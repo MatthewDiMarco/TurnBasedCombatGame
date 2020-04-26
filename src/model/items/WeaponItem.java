@@ -34,7 +34,6 @@ public class WeaponItem extends DamageItem
     @Override
     public String toString()
     {
-        return super.toString() + ", " + wpnType + " type, " + 
-               "COST: " + this.getCost() + "G";
+        return super.toString() + "  " + wpnType + " type";
     } 
 }

@@ -44,6 +44,13 @@ public abstract class Item
             );
         }
 
+        if (inMaxEff < 0 || inMinEff < 0)
+        {
+            throw new IllegalArgumentException(
+                "Min and Max Effects should be positive integers"
+            );
+        }
+
         name = inName;
         cost = inCost;
         minEffect = inMinEff;
@@ -93,6 +100,7 @@ public abstract class Item
      */
     public String toString()
     {
-        return name;
+        return cost + " G  " + name + "  " + 
+               minEffect + " - " + maxEffect;
     }
 }

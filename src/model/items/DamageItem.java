@@ -31,6 +31,11 @@ public abstract class DamageItem extends Item
         dmgType = inDmgType;
     }
 
+    public String getDamageType()
+    {
+        return dmgType;
+    }
+
     /**
      * A simple string representation of the Item
      * @return A String containing the attributes
@@ -38,7 +43,6 @@ public abstract class DamageItem extends Item
     @Override
     public String toString()
     {
-        return super.toString() + ", " + 
-               minEffect + "-" + maxEffect + " " + dmgType + " Damage";
+        return super.toString() + " Damage (" + dmgType + ")"; 
     }
 }
