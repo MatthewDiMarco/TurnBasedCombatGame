@@ -10,14 +10,17 @@ import java.util.*;
  */
 public class GameCharacter
 {
-    // Character Attributes
+    // Fields
     private String name;
     private int gold;
+    private boolean dead;
     protected CharacterInventory inventory;
     protected int currHealth;
     protected final int maxHealth;
     protected Random generator;
-    private boolean dead;
+    private List<CharacterUpdateObservable> updateObservers;
+    private List<CharacterActionObservable> actionObservers;
+    private List<CharacterDieObservable> dieObservers;
 
     /**
      * Constructor.
@@ -29,6 +32,10 @@ public class GameCharacter
     public GameCharacter(String inName, int inGold, int inMaxHealth,
                          CharacterInventory inInventory)
     {
+        updateObservers = new ArrayList<CharacterUpdateObservable>();
+        actionObservers = new ArrayList<CharacterActionObservable>();
+        dieObservers = new ArrayList<CharacterDieObservable>();
+
         setName(inName);
         setGold(inGold);
         if (inMaxHealth <= 0)
@@ -39,7 +46,7 @@ public class GameCharacter
         }
     
         maxHealth = inMaxHealth;
-        currHealth = maxHealth;
+        setHealth(maxHealth);
 
         if (inInventory == null)
         {
@@ -101,7 +108,7 @@ public class GameCharacter
 
     /**
      * Dead/Alive Status accessor.
-     * @return True of character is dead.
+     * @return True if character is dead.
      */
     public boolean isDead()
     {
@@ -136,6 +143,7 @@ public class GameCharacter
         }
         
         name = inName;
+        this.notifyUpdateObservers();
     }
 
     /**
@@ -153,6 +161,7 @@ public class GameCharacter
         else
         {
             gold = inGold;
+            this.notifyUpdateObservers();
         }
     }
 
@@ -167,6 +176,7 @@ public class GameCharacter
         {
             currHealth = 0;
             dead = true;
+            this.notifyDieObservers();
         }
         else if (inHealth > maxHealth) // Stop health exceeding max
         {
@@ -176,6 +186,8 @@ public class GameCharacter
         {
             currHealth = inHealth;
         }
+        
+        this.notifyUpdateObservers();
     }
 
     /**
@@ -185,22 +197,27 @@ public class GameCharacter
      */
     public int attack()
     {
+        String msg = "";
         int dmg = 0;
 
         int effect = inventory.usePotion(generator);
         if (effect > 0) // It's a healing potion
         {
             this.setHealth(currHealth + effect); 
+            msg = name + " HEALED " + effect + " points of Health";
         }
         else if (effect < 0) // It's a damage potion
         {
             dmg = Math.abs(effect);
+            msg = name + " ATTACKED with " + dmg + " points of Damage";
         }
         else // No potion equiped. Use weapon (including enchantments) instead.
         {
             dmg = inventory.useWeapon(generator);
+            msg = name + " ATTACKED with " + dmg + " points of Damage";
         }
 
+        this.notifyActionObservers(msg);
         return dmg;
     }
 
@@ -211,7 +228,54 @@ public class GameCharacter
      */
     public void defend(int dmg)
     {
+        String msg = "";
+
         int def = inventory.useArmour(generator);
+        msg = name + " ABSORBED " + def + " points of Damage";
+        this.notifyActionObservers(msg);
+
+        int oldHealth = this.getHealth();
         this.setHealth(currHealth - Math.max(0, dmg - def));
+        msg = name + " LOST " + (oldHealth - this.getHealth()) + " points of Health";
+        this.notifyActionObservers(msg);
+    }
+
+    public void addUpdateObserver(CharacterUpdateObservable ob)
+    {
+        updateObservers.add(ob);
+    }
+
+    public void addActionObserver(CharacterActionObservable ob)
+    {
+        actionObservers.add(ob);
+    }
+
+    public void addDieObserver(CharacterDieObservable ob)
+    {
+        dieObservers.add(ob);
+    }
+
+    public void notifyUpdateObservers()
+    {
+        for (CharacterUpdateObservable ob : updateObservers)
+        {
+            ob.updateCharacter(this);
+        }
+    }
+
+    public void notifyActionObservers(String actionMsg)
+    {
+        for (CharacterActionObservable ob : actionObservers)
+        {
+            ob.updateBattle(actionMsg);
+        }
+    }
+
+    public void notifyDieObservers()
+    {
+        for (CharacterDieObservable ob : dieObservers)
+        {
+            ob.characterDead();
+        }
     }
 }

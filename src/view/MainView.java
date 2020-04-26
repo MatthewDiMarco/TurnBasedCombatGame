@@ -1,5 +1,8 @@
 package view;
-import controller.*;
+import controller.PlayerController;
+import controller.BattleController;
+import model.characters.CharacterDieObservable;
+import model.characters.GameCharacter;
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -9,7 +12,7 @@ import java.awt.event.*;
  * The main application view from which other views stem from.
  * Contains the main menu and displays the player's stats at all times.
  */
-public class MainView extends JFrame
+public class MainView extends JFrame implements CharacterDieObservable
 {
     // Constants
     public static final int PADDING = 5;
@@ -18,6 +21,8 @@ public class MainView extends JFrame
     public static final int NUM_BUTTONS = 5;
 
     // Menu
+    private CharacterStatsPanel playerStats;
+    private InventoryPanel playerInv;
     private JButton shopBtn;
     private JButton changeNameBtn;
     private JButton invBtn;
@@ -27,15 +32,16 @@ public class MainView extends JFrame
     // Other views
     private NamePromptView namePromptView;
     private InventoryView inventoryView;
-    private BattleView battleView;
     private ShopView shopView;
+    private BattleView battleView;
 
     // Controllers
-    private PlayerController playerCon;
-    private BattleController battleCon;
+    PlayerController playerCon;
+    BattleController battleCon;
 
     /**
      * Constructor.
+     * @param playerInitial
      * @param inNamePrompt
      * @param inInventoryView
      * @param inBattleView
@@ -44,8 +50,9 @@ public class MainView extends JFrame
     public MainView(PlayerController inPlayerController,
                     NamePromptView inNamePrompt,
                     InventoryView inInventoryView,
+                    ShopView inShopView,
                     BattleView inBattleView,
-                    ShopView inShopView)
+                    BattleController inBattleController)
     {
         super("Main Menu");
 
@@ -57,13 +64,15 @@ public class MainView extends JFrame
         // Views
         namePromptView = inNamePrompt;
         inventoryView = inInventoryView; 
-        battleView = inBattleView;
         shopView = inShopView;
+        battleView = inBattleView;
 
-        // Controllers
         playerCon = inPlayerController;
+        battleCon = inBattleController;
 
-        // Buttons
+        // Widgets
+        playerStats = new CharacterStatsPanel(playerCon.getPlayer());
+        playerInv = new InventoryPanel(playerCon.getPlayer().getInventory());
         shopBtn = new JButton("Shop");
         changeNameBtn = new JButton("Change Name");
         invBtn = new JButton("Equip Items");
@@ -76,8 +85,10 @@ public class MainView extends JFrame
 
         // Initialise master pane
         JPanel masterPane = new JPanel();
-        masterPane.setLayout(new BoxLayout(masterPane, BoxLayout.X_AXIS));
-        masterPane.setBorder(BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING));
+        masterPane.setLayout(new BoxLayout(masterPane, BoxLayout.Y_AXIS));
+        masterPane.setBorder(
+            BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)
+        );
 
         // Main Menu pane
         JPanel menuPane = new JPanel(new GridLayout(NUM_BUTTONS, 1));
@@ -88,13 +99,17 @@ public class MainView extends JFrame
         menuPane.add(exitBtn);
 
         // Player stats pane
-        CharacterStatsPanel playerPane = new CharacterStatsPanel(
-            playerCon.getPlayerStats()
-        );
+        JPanel playerPane = new JPanel(new GridLayout(1, 2));
+
+        CharacterStatsPanel playerStatsPane = playerStats;
+        InventoryPanel playerInventoryPane = playerInv;
+
+        playerPane.add(playerStatsPane);
+        playerPane.add(playerInventoryPane);
         
         // Bring it all together
-        masterPane.add(menuPane);
         masterPane.add(playerPane);
+        masterPane.add(menuPane);
         this.add(masterPane);
         
         //
@@ -148,6 +163,11 @@ public class MainView extends JFrame
                     view.setVisibility(false);
                     view.setVisible(false);
                     battleView.setVisible(true);
+                    battleView.startBattle();
+
+                    // Generate new enemy and start observing it
+                    battleCon.generateEnemy();
+                    battleCon.getEnemy().addDieObserver(view);
                 }
             }
         );
@@ -163,13 +183,14 @@ public class MainView extends JFrame
             }
         );
 
+        playerCon.getPlayer().addDieObserver(this);
+
         // Fit Window
         pack();
     }
 
     /**
      * Close everything.
-     * 
      * Credit:
      * stackoverflow.com/questions/258099/
      * how-to-close-a-java-swing-application-from-the-code
@@ -187,11 +208,24 @@ public class MainView extends JFrame
      * Hides/Shows all the views depending on the value of b.
      * @param b Visibility
      */
-    private void setVisibility(boolean b)
+    public void setVisibility(boolean b)
     { 
         namePromptView.setVisible(b);
         inventoryView.setVisible(b);
         shopView.setVisible(b);
         battleView.setVisible(b);
+    }
+
+    @Override
+    public void characterDead()
+    {
+        if (playerCon.getPlayer().isDead())
+        {
+            this.closeAll();
+        }
+        else
+        {
+            this.setVisible(true);
+        }
     }
 }

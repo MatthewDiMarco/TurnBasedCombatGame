@@ -1,17 +1,20 @@
 package view;
 import controller.BattleController;
 import controller.PlayerController;
+import model.characters.CharacterActionObservable;
+import model.characters.CharacterDieObservable;
+import model.characters.EnemyCharacter;
 import javax.swing.*;
 import java.awt.GridLayout;
 import java.awt.Dimension;
 import java.awt.event.*;
-import java.util.*;
 
 /**
  * This view is responsible for displaying player and opponent stats, showing
  * battle messages as the fight continues, and letting the player make choices.
  */
-public class BattleView extends JFrame
+public class BattleView extends JFrame implements CharacterActionObservable, 
+                                                  CharacterDieObservable
 {
     // Constants
     public static final int WIDTH = 640;
@@ -24,6 +27,9 @@ public class BattleView extends JFrame
     private JButton attackBtn;
     private JButton usePotionBtn;
 
+    // Views
+    InventoryView inventoryView;
+
     // Controllers
     private BattleController battleCon;
     private PlayerController playerCon;
@@ -34,7 +40,8 @@ public class BattleView extends JFrame
      * @param inPlayerController
      */
     public BattleView(BattleController inBattleController, 
-                      PlayerController inPlayerController) 
+                      PlayerController inPlayerController,
+                      InventoryView inInventoryView) 
     {
         super("Battle");
 
@@ -43,14 +50,17 @@ public class BattleView extends JFrame
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
+        // Views
+        inventoryView = inInventoryView;
+
         // Controllers
         battleCon = inBattleController;
         playerCon = inPlayerController;
 
         // Initialise Widgets
-        playerStats = new CharacterStatsPanel(playerCon.getPlayerStats());
-        enemyStats = new CharacterStatsPanel(battleCon.getEnemyStats());
-        messages = new JList<String>();
+        playerStats = new CharacterStatsPanel(playerCon.getPlayer());
+        enemyStats = new CharacterStatsPanel(battleCon.getEnemy());
+        messages = new JList<String>(new DefaultListModel<String>());
         messages.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         attackBtn = new JButton("Attack");
         usePotionBtn = new JButton("Use Potion");
@@ -75,19 +85,23 @@ public class BattleView extends JFrame
         vsPane.add(enemyStats);
 
         // Button panel
-        JPanel buttonsPane = new JPanel(new GridLayout(2, 1));
-        buttonsPane.add(attackBtn);     // Attack
-        buttonsPane.add(usePotionBtn);  // Use Potion
+        JPanel buttonsPane = new JPanel();
+        buttonsPane.setLayout(new BoxLayout(buttonsPane, BoxLayout.X_AXIS));
+        buttonsPane.add(Box.createHorizontalGlue());
+        buttonsPane.add(attackBtn);
+        buttonsPane.add(Box.createRigidArea(new Dimension(MainView.PADDING, 0)));
+        buttonsPane.add(usePotionBtn);
 
         // Message feed
         // Game messages are appended here (e.g. player healed/attacked etc.)
-        JPanel masterFeedPane = new JPanel(new GridLayout(1, 2));
+        JPanel masterFeedPane = new JPanel();
+        masterFeedPane.setLayout(new BoxLayout(masterFeedPane, BoxLayout.Y_AXIS));
         JScrollPane messageFeedPane = new JScrollPane(messages);
         messageFeedPane.setPreferredSize(new Dimension());
 
         // Connect Feed and Button panels
-        masterFeedPane.add(buttonsPane);
         masterFeedPane.add(messageFeedPane);
+        masterFeedPane.add(buttonsPane);
 
         // Bring it all together
         masterPane.add(vsPane);             // player vs enemy
@@ -110,44 +124,79 @@ public class BattleView extends JFrame
         );
 
         // Use a potion button
-        attackBtn.addActionListener(
+        usePotionBtn.addActionListener(
             new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    // Talk to controller
+                    inventoryView.setVisible(true);
                 }
             }
         );
 
-        // Show battle messages
-        showMessages(battleCon.getMessages());
+        playerCon.getPlayer().addActionObserver(this);
+        playerCon.getPlayer().addDieObserver(this);
+        battleCon.getEnemy().addActionObserver(this);
+        battleCon.getEnemy().addDieObserver(this);
 
         // Fit window
         pack();
     }
 
     /**
-     * Update the messages list
+     * Set up a new encounter.
      */
-    public void showMessages(Vector<String> msgs)
+    public void startBattle()
     {
-        messages.setListData(msgs);
+        battleCon.newBattle();
+        JOptionPane.showMessageDialog(
+            null, 
+            "A wild " + battleCon.getEnemy().getName() + " has appeared!"
+        );
+
+        resetFeed();
     }
 
     /**
-     * Update the player stats
+     * Add a new message.
      */
-    public void showPlayerStats(List<String> inPlayerStats)
+    public void addMessage(String msg)
     {
-        playerStats.showCharacterStats(inPlayerStats);
+        ((DefaultListModel<String>)messages.getModel()).addElement(msg);
     }
 
-    /**
-     * Update the enemy stats
-     */
-    public void showEnemyStats(List<String> inEnemyStats) 
+    @Override
+    public void updateBattle(String msg) 
     {
-        enemyStats.showCharacterStats(inEnemyStats);
+        addMessage(msg);
+    }
+
+    @Override
+    public void characterDead()
+    {
+        EnemyCharacter enemy = battleCon.getEnemy();
+        if (playerCon.getPlayer().isDead())
+        {
+            JOptionPane.showMessageDialog(
+                null, 
+                "You were SLAIN by the " + enemy.getName() + "!"
+            );
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(
+                null, 
+                "You defeated the " + enemy.getName() + "!\n" + 
+                "You loot " + enemy.getGold() + " GOLD from it's corpse, " +
+                "and regain " + "[todo]" + " Health"
+            ); 
+        }
+
+        this.setVisible(false);
+    }
+
+    private void resetFeed()
+    {
+        messages = new JList<String>(new DefaultListModel<String>()); // reset
     }
 }

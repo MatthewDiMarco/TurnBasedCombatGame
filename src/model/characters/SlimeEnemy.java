@@ -28,6 +28,18 @@ public class SlimeEnemy extends EnemyCharacter
     }
 
     /**
+     * Equip the enemy with the appropriate attack/defence range unique to them.
+     */
+    @Override
+    protected void init()
+    {
+        inventory.equip(
+            "Slime Teeth", "Slashing", "Teeth", 1, MIN_ATTACK, MAX_ATTACK,
+            "Slime Skin", "Skin", 1, MIN_DEF, MAX_DEF
+        );
+    }
+
+    /**
      * Define this species' special abilities here.
      * Special abilities: 20% chance that when it's attack() method is called, 
      * there will be no damage (i.e. zero effect on opponent).

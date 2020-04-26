@@ -28,6 +28,18 @@ public class GoblinEnemy extends EnemyCharacter
     }
 
     /**
+     * Equip the enemy with the appropriate attack/defence range unique to them.
+     */
+    @Override
+    protected void init()
+    {
+        inventory.equip(
+            "Goblin Sword", "Slashing", "Sword", 1, MIN_ATTACK, MAX_ATTACK,
+            "Goblin Armour", "Iron", 1, MIN_DEF, MAX_DEF
+        );
+    }
+
+    /**
      * Define this species' special abilities here.
      * Goblin Special abilities: 50% chance that it's attacks will impose an 
      * extra 3 damage in addition to the base damage.

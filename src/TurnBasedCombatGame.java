@@ -1,7 +1,7 @@
 import view.*;
 import controller.*;
 import model.characters.GameCharacter;
-import model.items.CharacterInventory;
+import model.items.*;
 import javax.swing.SwingUtilities;
 
 /**
@@ -19,6 +19,20 @@ public class TurnBasedCombatGame
     {
         // Initialise Player
         CharacterInventory inventory = new CharacterInventory();
+        inventory.addItem(
+            new WeaponItem(
+                "Short Sword", 12,
+                2, 4, "Slashing", "Blade"
+            )
+        );
+        inventory.addItem(
+            new DefenceItem(
+                "Chest Plate", 20,
+                3, 5, "Iron"
+            )
+        );
+        inventory.equipWeapon(0);
+        inventory.equipArmour(1);
         GameCharacter player = new GameCharacter(
             "No Name", GOLD, MAX_HEALTH, inventory
         );
@@ -31,7 +45,7 @@ public class TurnBasedCombatGame
         // Create Views
         NamePromptView namePromptView = new NamePromptView(playerController);
         InventoryView inventoryView = new InventoryView(playerController);
-        BattleView battleView = new BattleView(battleController, playerController);
+        BattleView battleView = new BattleView(battleController, playerController, inventoryView);
         ShopView shopView = new ShopView(shopController, playerController);
 
         // Run Main Menu
@@ -44,8 +58,9 @@ public class TurnBasedCombatGame
                         playerController,
                         namePromptView,
                         inventoryView,
+                        shopView,
                         battleView,
-                        shopView
+                        battleController
                     );
 
                     game.setVisible(true);

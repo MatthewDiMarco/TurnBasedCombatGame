@@ -29,6 +29,18 @@ public class OgreEnemy extends EnemyCharacter
     }
 
     /**
+     * Equip the enemy with the appropriate attack/defence range unique to them.
+     */
+    @Override
+    protected void init()
+    {
+        inventory.equip(
+            "Ogre Club", "Blunt", "Club", 1, MIN_ATTACK, MAX_ATTACK,
+            "Ogre Armour", "Iron", 1, MIN_DEF, MAX_DEF
+        );
+    }
+
+    /**
      * Define this species' special abilities here.
      * Special abilities: 20% Chance it will attack twice in a row for a given 
      * attack.

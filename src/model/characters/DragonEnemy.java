@@ -28,6 +28,18 @@ public class DragonEnemy extends EnemyCharacter
     }
 
     /**
+     * Equip the enemy with the appropriate attack/defence range unique to them.
+     */
+    @Override
+    protected void init()
+    {
+        inventory.equip(
+            "Dragon Teeth", "Slashing", "Teeth", 1, MIN_ATTACK, MAX_ATTACK,
+            "Scales", "Dragon Scale", 1, MIN_DEF, MAX_DEF
+        );
+    }
+
+    /**
      * Define this species' special abilities here
      * Special abilities: 25% chance the damage inflicted will double, or 10%
      * chance the dragon will recover 10 health.

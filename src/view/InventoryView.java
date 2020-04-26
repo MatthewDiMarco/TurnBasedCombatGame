@@ -1,10 +1,9 @@
 package view;
-import controller.*;
+import controller.PlayerController;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.*;
-import java.util.*;
 
 /**
  * Responsible for enabling interaction between the player and their items, 
@@ -17,7 +16,7 @@ public class InventoryView extends JFrame
     public static final int HEIGHT = 180;
 
     // Widgets
-    private JList<String> items;
+    private InventoryPanel inventory;
     private JButton equipBtn;
     private JButton useBtn;
     private JButton closeBtn;
@@ -42,8 +41,7 @@ public class InventoryView extends JFrame
         playerCon = inPlayerController; 
 
         // Initialise Widgets
-        items = new JList<String>();
-        items.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        inventory = new InventoryPanel(playerCon.getInventory());
         equipBtn = new JButton("Equip");
         useBtn = new JButton("Use");
         closeBtn = new JButton("Close");
@@ -64,9 +62,10 @@ public class InventoryView extends JFrame
         // Inventory pane
         JPanel invPane = new JPanel(new BorderLayout());
         JToolBar toolbar = new JToolBar();
+        toolbar.setFloatable(false);
         toolbar.add(equipBtn);
         toolbar.add(useBtn);
-        JScrollPane itemPane = new JScrollPane(items);
+        InventoryPanel itemPane = inventory;
         invPane.add(toolbar, BorderLayout.NORTH);
         invPane.add(itemPane, BorderLayout.CENTER);
 
@@ -85,13 +84,15 @@ public class InventoryView extends JFrame
         // ACTION LISTENERS
         //
 
+        InventoryView view = this;
+
         // Equip Button
         equipBtn.addActionListener(
             new ActionListener()
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    int itemIndex = items.getSelectedIndex();
+                    int itemIndex = inventory.getItemIndex();
                     if (itemIndex != -1)
                     {
                         // Try equiping item
@@ -117,13 +118,14 @@ public class InventoryView extends JFrame
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    int itemIndex = items.getSelectedIndex();
+                    int itemIndex = inventory.getItemIndex();
                     if (itemIndex != -1)
                     {
                         // Try using
                         try
                         {
                             playerCon.prepPotion(itemIndex);
+                            view.setVisible(false);
                         }
                         catch (IllegalArgumentException e2)
                         {
@@ -148,17 +150,7 @@ public class InventoryView extends JFrame
             }
         );
 
-        showInventory(playerCon.getInventory());
-
         // Fit window
         pack();
-    }
-
-    /**
-     * Show the inventory items
-     */
-    public void showInventory(Vector<String> inv)
-    {
-        items.setListData(inv);
     }
 }

@@ -10,10 +10,14 @@ public class CharacterInventory extends Inventory
     private DefenceItem currArmour;
     private DamageItem currWeapon;
     private ConsumableItem currPotion;
+    private List<InventoryUpdateObservable> updateObservers;
 
     public CharacterInventory() 
     {
         super();
+
+        updateObservers = new ArrayList<InventoryUpdateObservable>();
+
         currArmour = null;
         currWeapon = null;
         currPotion = null; 
@@ -103,6 +107,29 @@ public class CharacterInventory extends Inventory
             throw new IllegalArgumentException("Not a potion");
         }
     }
+
+    /**
+     * Equips a mock weapon and armour with only attack and defence.
+     * This can be used when a character needs to inflict/absorb damage through
+     * no particular item on their body. (e.g. enemies)
+     */
+    public void equip(String wpnName, String wpnDamage, String wpnType, 
+                      int wpnValue, int minAttack, int maxAttack, 
+                      String armourName, String armourMaterial, 
+                      int armourValue, int minDef, int maxDef)
+    {  
+        this.addItem(
+            currWeapon = new WeaponItem(
+                wpnName, wpnValue, minAttack, maxAttack, wpnDamage, wpnType
+            )
+        );
+
+        this.addItem(
+            currArmour = new DefenceItem(
+                armourName, armourValue, minDef, maxDef, armourMaterial
+            )
+        );
+    }
     
     public String getCurrAttackRange()
     {
@@ -139,4 +166,24 @@ public class CharacterInventory extends Inventory
             throw new IllegalArgumentException("Inventory full");
         }
     } 
+
+    @Override
+    public void removeItem(int index)
+    {
+        super.removeItem(index);
+        notifyUpdateObservers();
+    }
+
+    public void addUpdateObserver(InventoryUpdateObservable ob)
+    {
+        updateObservers.add(ob);
+    }
+
+    public void notifyUpdateObservers()
+    {
+        for (InventoryUpdateObservable ob : updateObservers)
+        {
+            ob.updateInventory(items);
+        }
+    }
 }

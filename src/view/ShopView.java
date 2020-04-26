@@ -1,5 +1,7 @@
 package view;
 import controller.*;
+import model.items.InventoryUpdateObservable;
+import model.items.Item;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -11,7 +13,7 @@ import java.util.*;
  * This view is responsible for displaying all shop items and facilitating
  * transactions with the player.
  */
-public class ShopView extends JFrame
+public class ShopView extends JFrame implements InventoryUpdateObservable
 {
     // Constants
     public static final int WIDTH = 640;
@@ -78,6 +80,7 @@ public class ShopView extends JFrame
         // Shop Pane (for buying items and enchantments)
         JPanel shopPane = new JPanel(new BorderLayout());
         JToolBar shopToolbar = new JToolBar();
+        shopToolbar.setFloatable(false);
         shopToolbar.add(buyBtn);
         shopToolbar.addSeparator(new Dimension(MainView.PADDING, MainView.PADDING));
         shopToolbar.add(itemsBtn);
@@ -89,6 +92,7 @@ public class ShopView extends JFrame
         // Player Inventory Pane (for selling items)
         JPanel playerInvPane = new JPanel(new BorderLayout());
         JToolBar playerInvToolbar = new JToolBar();
+        playerInvToolbar.setFloatable(false);
         playerInvToolbar.add(sellBtn);  
         JScrollPane playerItemPane = new JScrollPane(playerItems);
         playerInvPane.add(playerInvToolbar, BorderLayout.NORTH);
@@ -175,7 +179,7 @@ public class ShopView extends JFrame
                     int itemIndex = playerItems.getSelectedIndex();
                     if (itemIndex != -1)
                     {
-                        // do stuff
+                        playerCon.getInventory().removeItem(itemIndex); //temp
                     }
                 }
             }
@@ -192,9 +196,9 @@ public class ShopView extends JFrame
             }
         );
 
-        // Load stuff
         showProduct(shopCon.getShopItems());
-        showPlayerInv(playerCon.getInventory());
+        showPlayerInv(playerCon.getInventory().getItems());
+        playerCon.getInventory().addUpdateObserver(this);
 
         // Fit window
         pack();
@@ -209,10 +213,22 @@ public class ShopView extends JFrame
     }
 
     /**
-     * Show the player's inventory (for selling)
+     * Show the player's inventory items
      */
-    public void showPlayerInv(Vector<String> inv)
+    public void showPlayerInv(List<Item> inventory)
     {
+        Vector<String> inv = new Vector<String>();
+        for (Item ii : inventory)
+        {
+            inv.add(ii.toString());
+        }
+        
         playerItems.setListData(inv);
+    }
+
+    @Override
+    public void updateInventory(List<Item> inventory)
+    {
+        showPlayerInv(inventory);
     }
 }

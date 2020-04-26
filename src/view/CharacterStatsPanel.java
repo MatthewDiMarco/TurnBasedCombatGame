@@ -1,13 +1,14 @@
 package view;
+import model.characters.CharacterUpdateObservable;
+import model.characters.GameCharacter;
 import javax.swing.*;
 import java.awt.Graphics;
 import java.awt.*;
-import java.util.List;
 
 /**
  * Draws a game character's stats.
  */
-public class CharacterStatsPanel extends JPanel 
+public class CharacterStatsPanel extends JPanel implements CharacterUpdateObservable
 {
     // Stats
     private String characterName;
@@ -20,18 +21,21 @@ public class CharacterStatsPanel extends JPanel
      * Constructor.
      * @param stats
      */
-    public CharacterStatsPanel(List<String> stats) 
+    public CharacterStatsPanel(GameCharacter character) 
     {
         super();
-        showCharacterStats(stats);
+        character.addUpdateObserver(this);
+        showCharacterStats(character);
     }
 
     /**
      * Draw the stats
      */
     @Override
-    public void paint(Graphics g)
+    public void paintComponent(Graphics g)
     {
+        super.paintComponent(g);
+
         final int SPACING = 20;
         final int COL_OFFSET = 6;
 
@@ -54,19 +58,20 @@ public class CharacterStatsPanel extends JPanel
 
     /**
      * Assign values to the character's stats.
-     * Index Format of List:
-     * 0 = name
-     * 1 = health
-     * 2 = gold
-     * 3 = attack range
-     * 4 = defence range
-     * @param list A list of String character stats.
+     * @param character The character to display 
      */
-    public void showCharacterStats(List<String> list) {
-        characterName = list.get(0);
-        characterHealth = list.get(1);
-        characterGold = list.get(2);
-        characterAttack = list.get(3);
-        characterDefence = list.get(4);
+    public void showCharacterStats(GameCharacter character) {
+        characterName = character.getName();
+        characterHealth = character.getHealth() + " / " + character.getMaxHealth();
+        characterGold = character.getGold() + " G";
+        characterAttack = character.getInventory().getCurrAttackRange();
+        characterDefence = character.getInventory().getCurrDefenceRange();
     }
+
+    @Override
+    public void updateCharacter(GameCharacter character)
+    {
+        showCharacterStats(character);
+        this.repaint();
+    }  
 }

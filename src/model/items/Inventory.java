@@ -15,7 +15,7 @@ public class Inventory
         numItems = 0;
     }
 
-    public ArrayList<Item> getItems()
+    public List<Item> getItems()
     {
         return items;
     }

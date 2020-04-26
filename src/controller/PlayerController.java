@@ -14,32 +14,21 @@ public class PlayerController
         inv = inInventory;        
     }
 
-    public List<String> getPlayerStats()
+    public GameCharacter getPlayer()
     {
-        List<String> stats = new ArrayList<String>();
-        stats.add(player.getName());
-        stats.add(player.getHealth() + " / " + player.getMaxHealth());
-        stats.add(player.getGold() + " G");
-        stats.add(inv.getCurrAttackRange());
-        stats.add(inv.getCurrDefenceRange());
-
-        return stats;
+        return player;
     }
 
-    public Vector<String> getInventory()
+    public CharacterInventory getInventory()
     {
-        //temp
-        Vector<String> items = new Vector<String>();
-        items.add("Short Sword");
-        items.add("Iron thong");
-        items.add("Potion of Healing");
-
-        return items;
+        return player.getInventory();
     }
 
     public void changePlayerName(String newName)
     {
         player.setName(newName);
+        player.attack();
+        player.defend(10);
     }
 
     public void equipItem(int index)
