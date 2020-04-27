@@ -1,6 +1,5 @@
 package view;
 import controller.*;
-import model.items.InventoryUpdateObservable;
 import model.items.Item;
 import javax.swing.*;
 import java.awt.BorderLayout;
@@ -13,7 +12,7 @@ import java.util.*;
  * This view is responsible for displaying all shop items and facilitating
  * transactions with the player.
  */
-public class ShopView extends JFrame implements InventoryUpdateObservable
+public class ShopView extends JFrame
 {
     // Constants
     public static final int WIDTH = 640;
@@ -21,7 +20,7 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
 
     // Widgets
     private JList<String> products;
-    private JList<String> playerItems;
+    private InventoryPanel playerItems;
     private JButton buyBtn;
     private JButton sellBtn;
     private JButton itemsBtn;
@@ -56,8 +55,7 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
         // Initialise Widgets
         products = new JList<String>();
         products.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        playerItems = new JList<String>();
-        playerItems.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        playerItems = new InventoryPanel(playerCon.getInventory());
         buyBtn = new JButton("Buy");
         sellBtn = new JButton("Sell for 50% G");
         itemsBtn = new JButton("Items");
@@ -176,7 +174,7 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    int itemIndex = playerItems.getSelectedIndex();
+                    int itemIndex = playerItems.getItemIndex();
                     if (itemIndex != -1)
                     {
                         playerCon.getInventory().removeItem(itemIndex); //temp
@@ -197,8 +195,6 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
         );
 
         showItems(shopCon.getShopItems());
-        showPlayerInv(playerCon.getInventory().getItems());
-        playerCon.getInventory().addUpdateObserver(this);
 
         // Fit window
         pack();
@@ -212,7 +208,9 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
         Vector<String> inv = new Vector<String>();
         for (Item ii : inProducts)
         {
-            inv.add(ii.toString());
+            inv.add(ii.getCost() + " G" + Item.SPACING +  
+                    ii.toString() + Item.SPACING + 
+                    ii.getEffectRange());
         }
 
         products.setListData(inv);
@@ -221,25 +219,5 @@ public class ShopView extends JFrame implements InventoryUpdateObservable
     public void showEnchantments(Vector<String> inEnchantments)
     {
         products.setListData(inEnchantments);
-    }
-
-    /**
-     * Show the player's inventory items
-     */
-    public void showPlayerInv(List<Item> inventory)
-    {
-        Vector<String> inv = new Vector<String>();
-        for (Item ii : inventory)
-        {
-            inv.add(ii.toString());
-        }
-        
-        playerItems.setListData(inv);
-    }
-
-    @Override
-    public void updateInventory(List<Item> inventory)
-    {
-        showPlayerInv(inventory);
     }
 }

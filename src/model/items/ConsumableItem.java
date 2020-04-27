@@ -40,19 +40,20 @@ public class ConsumableItem extends Item
         return effType == 'H';
     }
 
-    /**
-     * A simple string representation of the Potion
-     * @return A String containing the attributes
-     */
     @Override
     public String toString()
     {
+        return name;
+    }
+
+    @Override
+    public String getEffectRange()
+    {
         String effect = "Healing";
-        if (effType != 'H')
+        if (!isHealing())
         {
             effect = "Damage";
         }
-
-        return super.toString() + " " + effect;
+        return super.getEffectRange() + " " + effect;
     }
 }

@@ -3,7 +3,6 @@ import model.items.InventoryUpdateObservable;
 import model.items.CharacterInventory;
 import model.items.Item;
 import javax.swing.*;
-import java.awt.BorderLayout;
 import java.util.*;
 
 /**
@@ -13,6 +12,7 @@ public class InventoryPanel extends JPanel implements InventoryUpdateObservable
 {
     private JList<String> items;
     private JScrollPane invPane;
+    private EquipedPanel equipedPane;
 
     /**
      * Constructor.
@@ -20,29 +20,18 @@ public class InventoryPanel extends JPanel implements InventoryUpdateObservable
      */
     public InventoryPanel(CharacterInventory inv) 
     {
-        super(new BorderLayout());
+        super();
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+
         items = new JList<String>();
         items.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
         invPane = new JScrollPane(items);
+        equipedPane = new EquipedPanel(inv);
+        
         this.add(invPane);
-
+        this.add(equipedPane);
         inv.addUpdateObserver(this);
-        showInventory(inv.getItems());
-    }
-
-    /**
-     * Show the inventory items
-     */
-    public void showInventory(List<Item> inventory)
-    {
-        Vector<String> inv = new Vector<String>();
-        for (Item ii : inventory)
-        {
-            inv.add(ii.toString());
-        }
-
-        items.setListData(inv);
+        updateInventory(inv);
     }
 
     public int getItemIndex()
@@ -51,8 +40,17 @@ public class InventoryPanel extends JPanel implements InventoryUpdateObservable
     }
 
     @Override
-    public void updateInventory(List<Item> items)
+    public void updateInventory(CharacterInventory inventory)
     {
-        showInventory(items);
+        List<Item> inItems = inventory.getItems();
+        Vector<String> inv = new Vector<String>();
+        for (Item ii : inItems)
+        {
+            inv.add(ii.getCost() + " G" + Item.SPACING +  
+                    ii.toString() + Item.SPACING + 
+                    ii.getEffectRange());
+        }
+
+        items.setListData(inv);
     }
 }

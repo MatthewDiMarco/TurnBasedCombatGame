@@ -6,10 +6,9 @@ public abstract class Enchantment extends DamageItem
     protected Item next;
 
     public Enchantment(DamageItem inNext, String inName, int inCost, 
-                       int inMinEff, int inMaxEff, 
-                       String inDmgType)
+                       int inMinEff, int inMaxEff)
     {
-        super(inName, inCost, inMinEff, inMaxEff, inDmgType);
+        super(inName, inCost, inMinEff, inMaxEff, inNext.getDamageType());
         next = inNext;
     }
 
@@ -17,7 +16,26 @@ public abstract class Enchantment extends DamageItem
     public int getEffect(Random randGenerator)
     {
         return next.getEffect(randGenerator);
-    }   
+    } 
+
+    @Override
+    public String getEffectRange()
+    {
+        return this.getMin() + " - " + this.getMax() + " " + 
+               dmgType + " Damage";
+    }
+
+    @Override
+    protected int getMin()
+    {
+        return next.getMin() + minEffect;
+    }
+
+    @Override
+    protected int getMax()
+    {
+        return next.getMax() + maxEffect;
+    }
     
     @Override
     public int getCost()
@@ -28,6 +46,6 @@ public abstract class Enchantment extends DamageItem
     @Override
     public String toString()
     {
-        return next.toString() + ", " + this.getName() + " ECH";
+        return next.toString() + SPACING + this.name;
     } 
 }

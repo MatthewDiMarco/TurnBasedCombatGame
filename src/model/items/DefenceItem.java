@@ -1,4 +1,5 @@
 package model.items;
+import java.util.*;
 
 /**
  * Armour is used to defend it's host from blows.
@@ -29,13 +30,15 @@ public class DefenceItem extends Item
         material = inMat;
     }
 
-    /**
-     * A simple string representation of the Armour
-     * @return A String containing the attributes
-     */
     @Override
     public String toString()
     {
-        return super.toString() + " Defence";
+        return name + " (" + material + ")";
+    }
+
+    @Override
+    public String getEffectRange()
+    {
+        return super.getEffectRange() + " Defence";
     }
 }

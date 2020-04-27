@@ -6,7 +6,7 @@ package model.items;
  */
 public abstract class DamageItem extends Item
 {
-    private String dmgType;
+    protected String dmgType;
 
     /**
      * Constructor.
@@ -34,15 +34,5 @@ public abstract class DamageItem extends Item
     public String getDamageType()
     {
         return dmgType;
-    }
-
-    /**
-     * A simple string representation of the Item
-     * @return A String containing the attributes
-     */
-    @Override
-    public String toString()
-    {
-        return super.toString() + " Damage (" + dmgType + ")"; 
     }
 }

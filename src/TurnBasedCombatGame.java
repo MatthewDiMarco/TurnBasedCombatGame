@@ -3,6 +3,7 @@ import controller.*;
 import model.characters.GameCharacter;
 import model.items.*;
 import javax.swing.SwingUtilities;
+import java.util.*;
 
 /**
  * [description] ... [credit]
@@ -31,6 +32,7 @@ public class TurnBasedCombatGame
                 3, 5, "Iron"
             )
         );
+
         inventory.equipWeapon(0);
         inventory.equipArmour(1);
         GameCharacter player = new GameCharacter(

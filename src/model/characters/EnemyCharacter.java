@@ -36,14 +36,8 @@ public abstract class EnemyCharacter extends GameCharacter
         return dmg;
     }
 
-    /**
-     * This is where the enemy's special abilities will be implemented.
-     */
+    // Abstract Methods
     protected abstract int modifier(Random generator, int damage);
-
-    /**
-     * Equip the enemy with the appropriate attack/defence range unique to them.
-     */
     protected abstract void init();
 
     /**

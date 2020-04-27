@@ -17,7 +17,7 @@ public class CharacterInventory extends Inventory
         super();
 
         updateObservers = new ArrayList<InventoryUpdateObservable>();
-
+        
         currArmour = null;
         currWeapon = null;
         currPotion = null; 
@@ -43,6 +43,16 @@ public class CharacterInventory extends Inventory
         }
 
         return def;
+    }
+
+    public Item getCurrWeapon()
+    {
+        return currWeapon;
+    }
+
+    public Item getCurrArmour()
+    {
+        return currArmour;
     }
 
     /**
@@ -179,11 +189,11 @@ public class CharacterInventory extends Inventory
         updateObservers.add(ob);
     }
 
-    public void notifyUpdateObservers()
+    protected void notifyUpdateObservers()
     {
         for (InventoryUpdateObservable ob : updateObservers)
         {
-            ob.updateInventory(items);
+            ob.updateInventory(this);
         }
     }
 }

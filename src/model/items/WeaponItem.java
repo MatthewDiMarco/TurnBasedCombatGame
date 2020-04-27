@@ -1,4 +1,5 @@
 package model.items;
+import java.util.*;
 
 /**
  * Weapons are used to deal damage to an opponent.
@@ -34,6 +35,12 @@ public class WeaponItem extends DamageItem
     @Override
     public String toString()
     {
-        return super.toString() + "  " + wpnType + " type";
+        return name + " (" + wpnType + " type)";
     } 
+
+    @Override
+    public String getEffectRange()
+    {
+        return super.getEffectRange() + " " + dmgType + " Damage";
+    }
 }

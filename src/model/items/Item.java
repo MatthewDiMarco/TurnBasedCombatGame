@@ -9,8 +9,10 @@ import java.util.*;
  */
 public abstract class Item
 {
-    private String name;
+    public static final String SPACING = "     ";
+
     private int cost;
+    protected String name;
     protected int minEffect;
     protected int maxEffect;
 
@@ -67,13 +69,9 @@ public abstract class Item
         return eff;
     }
 
-    /**
-     * Name accessor.
-     * @return The item's name
-     */
-    public String getName()
+    public String getEffectRange()
     {
-        return name;
+        return minEffect + " - " + maxEffect;
     }
 
     /**
@@ -85,22 +83,15 @@ public abstract class Item
         return cost;
     } 
 
-    /**
-     * Range accessor
-     * @return The item's effect range
-     */
-    public String getEffectRange()
+    protected int getMin()
     {
-        return minEffect + " - " + maxEffect;
-    } 
-
-    /**
-     * A simple string representation of the item
-     * @return A String containing the attributes
-     */
-    public String toString()
-    {
-        return cost + " G  " + name + "  " + 
-               minEffect + " - " + maxEffect;
+        return minEffect;
     }
+
+    protected int getMax()
+    {
+        return maxEffect;
+    }
+    
+    abstract public String toString();
 }

@@ -34,7 +34,7 @@ public class DragonEnemy extends EnemyCharacter
     protected void init()
     {
         inventory.equip(
-            "Dragon Teeth", "Slashing", "Teeth", 1, MIN_ATTACK, MAX_ATTACK,
+            "Dragon Breath", "Fire", "Fire", 1, MIN_ATTACK, MAX_ATTACK,
             "Scales", "Dragon Scale", 1, MIN_DEF, MAX_DEF
         );
     }

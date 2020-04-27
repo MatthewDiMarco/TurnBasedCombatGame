@@ -3,17 +3,24 @@ import java.util.*;
 
 public class EnchantmentAddDamage extends Enchantment
 {
-    public EnchantmentAddDamage(DamageItem inNext, String inName, int inCost, 
-                                int inMinEff, int inMaxEff, 
-                                String inDmgType)
+    private int add;
+
+    public EnchantmentAddDamage(DamageItem inNext, int inAdd, int inCost)
     {
-        super(inNext, inName, inCost, inMinEff, inMaxEff, inDmgType);
+        super(inNext, ("DMG +" + inAdd), inCost, 0, inAdd);
+        if (inAdd <= 0)
+        {
+            throw new IllegalArgumentException(
+                "Damage added must be > 0"
+            );
+        }
+
+        add = inAdd; 
     }
 
     @Override
     public int getEffect(Random randGenerator)
     {
-        return next.getEffect(randGenerator) + 
-               randGenerator.nextInt(maxEffect + 1 - minEffect) + minEffect;
+        return next.getEffect(randGenerator) + add;
     }
 }

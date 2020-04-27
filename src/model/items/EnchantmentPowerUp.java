@@ -1,14 +1,13 @@
 package model.items;
 import java.util.*;
 
-public class EnchantmentMultiplyDamage extends Enchantment
+public class EnchantmentPowerUp extends Enchantment
 {
     private double factor;
 
-    public EnchantmentMultiplyDamage(DamageItem inNext, String inName, int inCost, 
-                                     String inDmgType, double inFactor)
+    public EnchantmentPowerUp(DamageItem inNext, double inFactor, int inCost)
     {
-        super(inNext, inName, inCost, 1, 1, inDmgType);
+        super(inNext, ("POW-UP (x" + inFactor + ")"), inCost, 0, 0);
         if (inFactor <= 1)
         {
             throw new IllegalArgumentException(
