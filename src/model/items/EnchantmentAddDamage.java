@@ -19,8 +19,8 @@ public class EnchantmentAddDamage extends Enchantment
     }
 
     @Override
-    public int getEffect(Random randGenerator)
+    public int getEffect(Dice dice)
     {
-        return next.getEffect(randGenerator) + add;
+        return next.getEffect(dice) + add;
     }
 }

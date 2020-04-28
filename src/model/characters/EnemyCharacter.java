@@ -1,6 +1,6 @@
 package model.characters;
 import model.items.CharacterInventory;
-import java.util.*;
+import model.items.Dice;
 
 /**
  * Generic representation of the 'Enemy Character' entity. Requires a child to
@@ -16,9 +16,12 @@ public abstract class EnemyCharacter extends GameCharacter
      * @param inInventory The enemies' items.
      */
     public EnemyCharacter(String inSpecies, int inGold, int inMaxHealth,
+                          int inMinA, int inMaxA, int inMinD, int inMaxD,
                           CharacterInventory inInventory)
     {
-        super(inSpecies, inGold, inMaxHealth, inInventory);
+        super(inSpecies, inGold, inMaxHealth, 
+              inMinA, inMaxA, inMinD, inMaxD, 
+              inInventory);
     }
 
     /**
@@ -26,49 +29,17 @@ public abstract class EnemyCharacter extends GameCharacter
      * opponent's health. The effect might be amplified or dampened by the
      * enemies internal modifier method which applies special abilities
      * unique to the species.
+     * @param dice Random generator
      * @return The total damage
      */
     @Override
-    public int attack()
+    public int attack(Dice dice)
     {
-        int dmg = super.attack();
-        modifier(generator, dmg); // Unique special abilities
+        int dmg = super.attack(dice);
+        modifier(dmg, dice); // Unique special abilities
         return dmg;
     }
 
     // Abstract Methods
-    protected abstract int modifier(Random generator, int damage);
-    protected abstract void init();
-
-    /**
-     * Enemy factory. Constructs an instance of an enemy extending this class.
-     * Returns null if the type does not exist.
-     * @return The fully initialised enemy
-     */
-    public static EnemyCharacter makeEnemy(String enemyStr)
-    {
-        EnemyCharacter enemy = null;
-        if (enemyStr.toUpperCase().equals("SLIME"))
-        {   
-            enemy = new SlimeEnemy(new CharacterInventory());
-            enemy.init();
-        }
-        else if (enemyStr.toUpperCase().equals("GOBLIN"))
-        {
-            enemy = new GoblinEnemy(new CharacterInventory());
-            enemy.init();
-        }
-        else if (enemyStr.toUpperCase().equals("OGRE"))
-        {
-            enemy = new OgreEnemy(new CharacterInventory());
-            enemy.init();
-        }
-        else if (enemyStr.toUpperCase().equals("DRAGON"))
-        {
-            enemy = new DragonEnemy(new CharacterInventory());
-            enemy.init();
-        }
-
-        return enemy;
-    }
+    protected abstract int modifier(int dmg, Dice dice);
 }

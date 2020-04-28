@@ -1,5 +1,4 @@
 package model.items;
-import java.util.*;
 
 public abstract class Enchantment extends DamageItem
 {
@@ -13,9 +12,9 @@ public abstract class Enchantment extends DamageItem
     }
 
     @Override
-    public int getEffect(Random randGenerator)
+    public int getEffect(Dice dice)
     {
-        return next.getEffect(randGenerator);
+        return next.getEffect(dice);
     } 
 
     @Override
@@ -26,13 +25,13 @@ public abstract class Enchantment extends DamageItem
     }
 
     @Override
-    protected int getMin()
+    public int getMin()
     {
         return next.getMin() + minEffect;
     }
 
     @Override
-    protected int getMax()
+    public int getMax()
     {
         return next.getMax() + maxEffect;
     }

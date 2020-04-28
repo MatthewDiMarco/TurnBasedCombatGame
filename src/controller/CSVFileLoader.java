@@ -8,10 +8,12 @@ import java.io.*;
 
 public class CSVFileLoader implements ShopLoader
 {
+    /**
+     * Append items in the csv file to an existing shop.
+     */
     @Override
-    public Inventory load(String fileName)
+    public Inventory load(Inventory shop, String fileName)
     {
-        Inventory shop = new Inventory();
         FileInputStream fileStrm = null;
         InputStreamReader rdr;
         BufferedReader bufRdr;

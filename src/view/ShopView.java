@@ -55,7 +55,7 @@ public class ShopView extends JFrame
         // Initialise Widgets
         products = new JList<String>();
         products.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-        playerItems = new InventoryPanel(playerCon.getInventory());
+        playerItems = new InventoryPanel(playerCon.getInventory(), playerCon.getPlayer());
         buyBtn = new JButton("Buy");
         sellBtn = new JButton("Sell for 50% G");
         itemsBtn = new JButton("Items");

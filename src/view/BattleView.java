@@ -2,8 +2,6 @@ package view;
 import controller.BattleController;
 import controller.PlayerController;
 import model.characters.CharacterActionObservable;
-import model.characters.CharacterDieObservable;
-import model.characters.EnemyCharacter;
 import javax.swing.*;
 import java.awt.GridLayout;
 import java.awt.Dimension;
@@ -13,8 +11,7 @@ import java.awt.event.*;
  * This view is responsible for displaying player and opponent stats, showing
  * battle messages as the fight continues, and letting the player make choices.
  */
-public class BattleView extends JFrame implements CharacterActionObservable, 
-                                                  CharacterDieObservable
+public class BattleView extends JFrame implements CharacterActionObservable
 {
     // Constants
     public static final int WIDTH = 640;
@@ -135,9 +132,7 @@ public class BattleView extends JFrame implements CharacterActionObservable,
         );
 
         playerCon.getPlayer().addActionObserver(this);
-        playerCon.getPlayer().addDieObserver(this);
         battleCon.getEnemy().addActionObserver(this);
-        battleCon.getEnemy().addDieObserver(this);
 
         // Fit window
         pack();
@@ -148,13 +143,18 @@ public class BattleView extends JFrame implements CharacterActionObservable,
      */
     public void startBattle()
     {
-        battleCon.newBattle();
+        clear();
+        enemyStats.updateCharacter(battleCon.getEnemy());
+        battleCon.getEnemy().addUpdateObserver(enemyStats);
         JOptionPane.showMessageDialog(
             null, 
             "A wild " + battleCon.getEnemy().getName() + " has appeared!"
         );
+    }
 
-        resetFeed();
+    public void clear()
+    {
+        messages = new JList<String>(new DefaultListModel<String>()); // reset
     }
 
     /**
@@ -169,34 +169,5 @@ public class BattleView extends JFrame implements CharacterActionObservable,
     public void updateBattle(String msg) 
     {
         addMessage(msg);
-    }
-
-    @Override
-    public void characterDead()
-    {
-        EnemyCharacter enemy = battleCon.getEnemy();
-        if (playerCon.getPlayer().isDead())
-        {
-            JOptionPane.showMessageDialog(
-                null, 
-                "You were SLAIN by the " + enemy.getName() + "!"
-            );
-        }
-        else
-        {
-            JOptionPane.showMessageDialog(
-                null, 
-                "You defeated the " + enemy.getName() + "!\n" + 
-                "You loot " + enemy.getGold() + " GOLD from it's corpse, " +
-                "and regain " + "[todo]" + " Health"
-            ); 
-        }
-
-        this.setVisible(false);
-    }
-
-    private void resetFeed()
-    {
-        messages = new JList<String>(new DefaultListModel<String>()); // reset
     }
 }

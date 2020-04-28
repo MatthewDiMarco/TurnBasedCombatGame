@@ -1,7 +1,6 @@
 package controller;
 import model.characters.GameCharacter;
 import model.items.*;
-import java.util.*;
 
 public class PlayerController 
 {
@@ -27,8 +26,6 @@ public class PlayerController
     public void changePlayerName(String newName)
     {
         player.setName(newName);
-        player.attack();
-        player.defend(10);
     }
 
     public void equipItem(int index)

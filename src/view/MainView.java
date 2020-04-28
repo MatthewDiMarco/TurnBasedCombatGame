@@ -3,6 +3,7 @@ import controller.PlayerController;
 import controller.BattleController;
 import model.characters.CharacterDieObservable;
 import model.characters.GameCharacter;
+import model.characters.EnemyCharacter;
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -72,7 +73,7 @@ public class MainView extends JFrame implements CharacterDieObservable
 
         // Widgets
         playerStats = new CharacterStatsPanel(playerCon.getPlayer());
-        playerInv = new InventoryPanel(playerCon.getPlayer().getInventory());
+        playerInv = new InventoryPanel(playerCon.getInventory(), playerCon.getPlayer());
         shopBtn = new JButton("Shop");
         changeNameBtn = new JButton("Change Name");
         invBtn = new JButton("Equip Items");
@@ -160,14 +161,15 @@ public class MainView extends JFrame implements CharacterDieObservable
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    view.setVisibility(false);
+                    // Generate new enemy and start observing it
+                    battleCon.newBattle();
+                    battleCon.getEnemy().addDieObserver(view);
+
+                    // Setup view
+                    view.setVisibility(false); // turn other views off
                     view.setVisible(false);
                     battleView.setVisible(true);
                     battleView.startBattle();
-
-                    // Generate new enemy and start observing it
-                    battleCon.generateEnemy();
-                    battleCon.getEnemy().addDieObserver(view);
                 }
             }
         );
@@ -219,13 +221,25 @@ public class MainView extends JFrame implements CharacterDieObservable
     @Override
     public void characterDead()
     {
-        if (playerCon.getPlayer().isDead())
+        EnemyCharacter enemy = battleCon.getEnemy();
+
+        battleView.clear();
+        battleView.setVisible(false);
+
+        if (playerCon.getPlayer().getHealth() == 0)
         {
             this.closeAll();
         }
         else
         {
             this.setVisible(true);
+
+            JOptionPane.showMessageDialog(
+                null, 
+                "You defeated the " + enemy.getName() + "!\n" + 
+                "You loot " + enemy.getGold() + " GOLD from it's corpse, " +
+                "and regain " + "[todo]" + " Health"
+            ); 
         }
     }
 }

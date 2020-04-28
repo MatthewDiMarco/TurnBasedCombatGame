@@ -1,6 +1,7 @@
 package view;
 import model.items.InventoryUpdateObservable;
 import model.items.CharacterInventory;
+import model.characters.GameCharacter;
 import model.items.Item;
 import javax.swing.*;
 import java.util.*;
@@ -18,7 +19,7 @@ public class InventoryPanel extends JPanel implements InventoryUpdateObservable
      * Constructor.
      * @param inv The Inventory to display
      */
-    public InventoryPanel(CharacterInventory inv) 
+    public InventoryPanel(CharacterInventory inv, GameCharacter player) 
     {
         super();
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));

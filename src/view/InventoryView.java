@@ -41,7 +41,7 @@ public class InventoryView extends JFrame
         playerCon = inPlayerController; 
 
         // Initialise Widgets
-        inventory = new InventoryPanel(playerCon.getInventory());
+        inventory = new InventoryPanel(playerCon.getInventory(), playerCon.getPlayer());
         equipBtn = new JButton("Equip");
         useBtn = new JButton("Use");
         closeBtn = new JButton("Close");

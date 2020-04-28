@@ -1,7 +1,6 @@
 package model.characters;
 import model.items.CharacterInventory;
-import java.util.*;
-
+import model.items.Dice;
 
 /**
  * Ogre enemy type.
@@ -25,19 +24,9 @@ public class OgreEnemy extends EnemyCharacter
      */
     public OgreEnemy(CharacterInventory inInventory)
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, inInventory);
-    }
-
-    /**
-     * Equip the enemy with the appropriate attack/defence range unique to them.
-     */
-    @Override
-    protected void init()
-    {
-        inventory.equip(
-            "Ogre Club", "Blunt", "Club", 1, MIN_ATTACK, MAX_ATTACK,
-            "Ogre Armour", "Iron", 1, MIN_DEF, MAX_DEF
-        );
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
+              MIN_ATTACK, MAX_ATTACK, MIN_DEF, MAX_DEF, 
+              inInventory);
     }
 
     /**
@@ -46,12 +35,12 @@ public class OgreEnemy extends EnemyCharacter
      * attack.
      */
     @Override
-    protected int modifier(Random randGenerator, int damage)
+    protected int modifier(int damage, Dice dice)
     {
         // 20% to attack twice in a row
-        if (randGenerator.nextInt(100) < 20)
+        if (dice.roll(1, 100) < 20)
         {
-            damage += inventory.useWeapon(randGenerator);
+            damage += super.attack(dice);
         }
 
         return damage;

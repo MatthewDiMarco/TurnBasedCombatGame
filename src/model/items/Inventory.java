@@ -1,4 +1,5 @@
 package model.items;
+import model.exceptions.*;
 import java.util.*;
 
 /**
@@ -13,6 +14,16 @@ public class Inventory
     {
         items = new ArrayList<Item>();
         numItems = 0;
+    }
+
+    public Item getItem(int index)
+    {
+        if (index >= items.size())
+        {
+            throw new IllegalArgumentException("No item at index " + index);
+        }
+        
+        return items.get(index);
     }
 
     public List<Item> getItems()

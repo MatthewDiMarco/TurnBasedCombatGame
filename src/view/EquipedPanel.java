@@ -2,14 +2,10 @@ package view;
 import model.items.CharacterInventory;
 import model.items.InventoryUpdateObservable;
 import javax.swing.*;
-import javax.swing.JPopupMenu.Separator;
-
-import java.awt.Graphics;
-import java.awt.*;
 import java.util.*;
 
 /**
- * Draws a game character's stats.
+ * Draws a game inventory's stats.
  */
 public class EquipedPanel extends JPanel implements InventoryUpdateObservable
 {
@@ -35,11 +31,14 @@ public class EquipedPanel extends JPanel implements InventoryUpdateObservable
     }
 
     @Override
-    public void updateInventory(CharacterInventory inv)
+    public void updateInventory(CharacterInventory inventory)
     {
         Vector<String> eq = new Vector<String>();
-        eq.add("EQUIPED: " + inv.getCurrWeapon().toString());
-        eq.add("EQUIPED: " + inv.getCurrArmour().toString());
+        eq.add("EQUIPED: " + inventory.getWeapon().toString() + "     " + 
+                inventory.getWeapon().getEffectRange());
+        eq.add("EQUIPED: " + inventory.getArmour().toString() + "     " + 
+                inventory.getArmour().getEffectRange());
+                
         equiped.setListData(eq);
     }  
 }

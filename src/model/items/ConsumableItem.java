@@ -31,6 +31,18 @@ public class ConsumableItem extends Item
         effType = Character.toUpperCase(inType);
     }
 
+    @Override
+    public int getEffect(Dice dice)
+    {
+        int effect = super.getEffect(dice);
+        if (!isHealing())
+        {
+            effect = -(effect); // Damage
+        }
+
+        return effect;
+    }
+
     /**
      * Type accessor.
      * @return True if healing, false if damage

@@ -3,7 +3,6 @@ import controller.*;
 import model.characters.GameCharacter;
 import model.items.*;
 import javax.swing.SwingUtilities;
-import java.util.*;
 
 /**
  * [description] ... [credit]
@@ -20,6 +19,9 @@ public class TurnBasedCombatGame
     {
         // Initialise Player
         CharacterInventory inventory = new CharacterInventory();
+
+        // todo: pass inventory to shop to get the cheap items
+
         inventory.addItem(
             new WeaponItem(
                 "Short Sword", 12,
@@ -33,16 +35,19 @@ public class TurnBasedCombatGame
             )
         );
 
-        inventory.equipWeapon(0);
-        inventory.equipArmour(1);
         GameCharacter player = new GameCharacter(
-            "No Name", GOLD, MAX_HEALTH, inventory
+            "No Name", GOLD, MAX_HEALTH, 
+            0, 0, 0, 0, 
+            inventory
         );
+
+        inventory.equip(0);
+        inventory.equip(1);
 
         // Create Controllers
         PlayerController playerController = new PlayerController(player, inventory);
-        BattleController battleController = new BattleController(); // give player
-        ShopController shopController = new ShopController(); // give player
+        BattleController battleController = new BattleController(new Dice(), new EnemyFactory());
+        ShopController shopController = new ShopController(new Inventory());
         shopController.loadShop("resources/shopdata.csv");
 
         // Create Views

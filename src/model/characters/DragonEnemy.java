@@ -1,6 +1,6 @@
 package model.characters;
 import model.items.CharacterInventory;
-import java.util.*;
+import model.items.Dice;
 
 /**
  * Dragon enemy type.
@@ -24,19 +24,9 @@ public class DragonEnemy extends EnemyCharacter
      */
     public DragonEnemy(CharacterInventory inInventory)
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, inInventory);
-    }
-
-    /**
-     * Equip the enemy with the appropriate attack/defence range unique to them.
-     */
-    @Override
-    protected void init()
-    {
-        inventory.equip(
-            "Dragon Breath", "Fire", "Fire", 1, MIN_ATTACK, MAX_ATTACK,
-            "Scales", "Dragon Scale", 1, MIN_DEF, MAX_DEF
-        );
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
+              MIN_ATTACK, MAX_ATTACK, MIN_DEF, MAX_DEF, 
+              inInventory);
     }
 
     /**
@@ -45,9 +35,9 @@ public class DragonEnemy extends EnemyCharacter
      * chance the dragon will recover 10 health.
      */
     @Override
-    protected int modifier(Random randGenerator, int damage)
+    protected int modifier(int damage, Dice dice)
     {
-        int result = randGenerator.nextInt(100); 
+        int result = dice.roll(1, 100);
 
         // 25% chance of (only) double damage
         if (result < 25)

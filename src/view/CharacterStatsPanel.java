@@ -64,8 +64,8 @@ public class CharacterStatsPanel extends JPanel implements CharacterUpdateObserv
         characterName = character.getName();
         characterHealth = character.getHealth() + " / " + character.getMaxHealth();
         characterGold = character.getGold() + " G";
-        characterAttack = character.getInventory().getCurrAttackRange();
-        characterDefence = character.getInventory().getCurrDefenceRange();
+        characterAttack = character.getAttackRange();
+        characterDefence = character.getDefenceRange();
     }
 
     @Override

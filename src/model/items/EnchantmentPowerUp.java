@@ -1,5 +1,4 @@
 package model.items;
-import java.util.*;
 
 public class EnchantmentPowerUp extends Enchantment
 {
@@ -7,7 +6,10 @@ public class EnchantmentPowerUp extends Enchantment
 
     public EnchantmentPowerUp(DamageItem inNext, double inFactor, int inCost)
     {
-        super(inNext, ("POW-UP (x" + inFactor + ")"), inCost, 0, 0);
+        super(inNext, ("POW-UP (x" + inFactor + ")"), inCost, 
+             (int)(inNext.getMin()*inFactor) - inNext.getMin(), 
+             (int)(inNext.getMax()*inFactor) - inNext.getMax());
+
         if (inFactor <= 1)
         {
             throw new IllegalArgumentException(
@@ -19,8 +21,8 @@ public class EnchantmentPowerUp extends Enchantment
     }
 
     @Override
-    public int getEffect(Random randGenerator)
+    public int getEffect(Dice dice)
     {
-        return (int)Math.round(next.getEffect(randGenerator) * factor);
+        return (int)Math.round(next.getEffect(dice) * factor);
     }   
 }

@@ -7,160 +7,103 @@ import java.util.*;
 public class CharacterInventory extends Inventory 
 {
     public static final int CAPACITY = 15;
-    private DefenceItem currArmour;
-    private DamageItem currWeapon;
-    private ConsumableItem currPotion;
+    private EquipItem currWeapon;
+    private EquipItem currArmour;
     private List<InventoryUpdateObservable> updateObservers;
 
     public CharacterInventory() 
     {
         super();
-
         updateObservers = new ArrayList<InventoryUpdateObservable>();
-        
-        currArmour = null;
         currWeapon = null;
-        currPotion = null; 
+        currArmour = null;
     }
 
-    public int useWeapon(Random generator)
-    {
-        int dmg = 0;
-        if (currWeapon != null)
-        {
-            dmg = currWeapon.getEffect(generator);
-        }
-
-        return dmg;
-    }
-
-    public int useArmour(Random generator)
-    {
-        int def = 0;
-        if (currArmour != null)
-        {
-            currArmour.getEffect(generator);
-        }
-
-        return def;
-    }
-
-    public Item getCurrWeapon()
+    public EquipItem getWeapon()
     {
         return currWeapon;
     }
 
-    public Item getCurrArmour()
+    public EquipItem getArmour()
     {
         return currArmour;
     }
 
-    /**
-     * Use the current potion
-     * Returns 0 if there's no equiped potion,
-     * greater than 0 if it's a healing potion,
-     * less 0 if it's a damage potion.
-     * @return The potion's effect as an integer.
-     */
-    public int usePotion(Random generator)
+    public int useWeapon(Dice dice)
     {
-        int effect = 0;
-        if (currPotion != null)
+        int dmg = 0;
+        if (currWeapon != null)
         {
-            effect = currPotion.getEffect(generator);
+            dmg += currWeapon.getEffect(dice);
+        }
+        return dmg;
+    }
 
-            // If it's a damage potion return effect as negative to indicate it's
-            // is reducing hp, not recovering it.
-            if (!currPotion.isHealing())
-            {   
-                effect = -effect;
-            }
+    public int useArmour(Dice dice)
+    {
+        int def = 0;
+        if (currArmour != null)
+        {
+            def += currArmour.getEffect(dice);
+        }
+        return def;
+    }
+
+    public int useItem(int index, Dice dice)
+    {
+        // Try getting item
+        ConsumableItem item;
+        try
+        {
+            item = (ConsumableItem)this.getItem(index);
+        }
+        catch(ClassCastException e)
+        {
+            throw new IllegalArgumentException("Not a consumable item");
+            //throw new ItemNotConsumableException();
         }
 
-        items.remove(currPotion);
-        currPotion = null;
+        // Use the item
+        int effect = item.getEffect(dice); // damage items will return negative
+
+        // Once 'consumed', remove from inventory
+        this.removeItem(index);
+
         return effect;
     }
 
-    public void equipWeapon(int index)
-    {
-        try
-        {
-            currWeapon = (DamageItem)items.get(index);
-        }
-        catch (ClassCastException e)
-        {
-            throw new IllegalArgumentException("Not a weapon");
-        }
-    }
-
-    public void equipArmour(int index)
-    {
-        try
-        {
-            currArmour = (DefenceItem)items.get(index);
-        }
-        catch (ClassCastException e)
-        {
-            throw new IllegalArgumentException("Not armour");
-        }
-    }
-
-    public void equipPotion(int index)
-    {
-        try
-        {
-            currPotion = (ConsumableItem)items.get(index);
-        }
-        catch (ClassCastException e)
-        {
-            throw new IllegalArgumentException("Not a potion");
-        }
-    }
-
     /**
-     * Equips a mock weapon and armour with only attack and defence.
-     * This can be used when a character needs to inflict/absorb damage through
-     * no particular item on their body. (e.g. enemies)
+     * 
+     * @param index
      */
-    public void equip(String wpnName, String wpnDamage, String wpnType, 
-                      int wpnValue, int minAttack, int maxAttack, 
-                      String armourName, String armourMaterial, 
-                      int armourValue, int minDef, int maxDef)
-    {  
-        this.addItem(
-            currWeapon = new WeaponItem(
-                wpnName, wpnValue, minAttack, maxAttack, wpnDamage, wpnType
-            )
-        );
-
-        this.addItem(
-            currArmour = new DefenceItem(
-                armourName, armourValue, minDef, maxDef, armourMaterial
-            )
-        );
-    }
-    
-    public String getCurrAttackRange()
+    public void equip(int index)
     {
-        String range = "0 - 0";
-        if (currWeapon != null)
+        // Get the equipment
+        EquipItem equipment;
+        try
         {
-            range = currWeapon.getEffectRange();
+            equipment = (EquipItem)getItem(index);
+        }
+        catch (ClassCastException e)
+        {
+            throw new IllegalArgumentException("Not equipable");
+            // throw new NotEquipableException(); todo
         }
         
-        return range;
-    }
-
-    public String getCurrDefenceRange()
-    {
-        String range = "0 - 0";
-        if (currWeapon != null)
+        // If no exceptions were raised, it's either WEAPON or ARMOUR
+        EquipItem.EquipType type = equipment.getEquipType();
+        switch (type)
         {
-            range = currArmour.getEffectRange();
+            case WEAPON:
+                currWeapon = equipment;
+                break;
+
+            case ARMOUR:
+                currArmour = equipment;
+                break;
         }
-        
-        return range;
+
+        this.notifyUpdateObservers();
     }
 
     @Override
@@ -169,6 +112,7 @@ public class CharacterInventory extends Inventory
         if (numItems < CAPACITY)
         {
             super.addItem(inItem);
+            notifyUpdateObservers();
         }
         else
         {
@@ -180,6 +124,13 @@ public class CharacterInventory extends Inventory
     @Override
     public void removeItem(int index)
     {
+        if (this.getItem(index) == currWeapon || 
+            this.getItem(index) == currArmour)
+        {
+            throw new IllegalArgumentException("Can't remove equiped items");
+            //todo throw IsEquipedException();
+        }
+
         super.removeItem(index);
         notifyUpdateObservers();
     }

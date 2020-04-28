@@ -4,7 +4,7 @@ import java.util.*;
 /**
  * Armour is used to defend it's host from blows.
  */
-public class DefenceItem extends Item
+public class DefenceItem extends EquipItem
 {
     private String material;
 
@@ -19,7 +19,7 @@ public class DefenceItem extends Item
     public DefenceItem(String inName, int inCost, int inMinEff, int inMaxEff, 
                        String inMat)
     {
-        super(inName, inCost, inMinEff, inMaxEff);
+        super(inName, inCost, inMinEff, inMaxEff, EquipItem.EquipType.ARMOUR);
         if (inMat.isEmpty())
         {
             throw new IllegalArgumentException(

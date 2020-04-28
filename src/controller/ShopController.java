@@ -9,9 +9,9 @@ public class ShopController
     private Inventory shopItems;
     private Vector<String> enchantments;
 
-    public ShopController()
+    public ShopController(Inventory inShopItems)
     {
-        shopItems = null;
+        shopItems = inShopItems;
         enchantments = new Vector<String>();
         enchantments.add("5G  Damage +2");
         enchantments.add("10G  Damage +5");
@@ -22,7 +22,7 @@ public class ShopController
     public void loadShop(String fileName)
     {
         ShopLoader loader = ShopFactory.makeShopLoader(fileName);
-        shopItems = loader.load(fileName);
+        loader.load(shopItems, fileName);
     }
 
     public List<Item> getShopItems()
@@ -33,5 +33,10 @@ public class ShopController
     public Vector<String> getEnchantments()
     {
         return enchantments;
+    }
+
+    public void sellItem()
+    {
+        //check: selling item is not currently equiped
     }
 }

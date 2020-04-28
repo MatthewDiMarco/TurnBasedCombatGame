@@ -1,6 +1,6 @@
 package model.characters;
 import model.items.CharacterInventory;
-import java.util.*;
+import model.items.Dice;
 
 /**
  * Goblin enemy type.
@@ -24,19 +24,9 @@ public class GoblinEnemy extends EnemyCharacter
      */
     public GoblinEnemy(CharacterInventory inInventory)
     {
-        super(SPECIES_NAME, GOLD, MAX_HEALTH, inInventory);
-    }
-
-    /**
-     * Equip the enemy with the appropriate attack/defence range unique to them.
-     */
-    @Override
-    protected void init()
-    {
-        inventory.equip(
-            "Goblin Sword", "Slashing", "Sword", 1, MIN_ATTACK, MAX_ATTACK,
-            "Goblin Armour", "Iron", 1, MIN_DEF, MAX_DEF
-        );
+        super(SPECIES_NAME, GOLD, MAX_HEALTH, 
+              MIN_ATTACK, MAX_ATTACK, MIN_DEF, MAX_DEF, 
+              inInventory);
     }
 
     /**
@@ -45,10 +35,10 @@ public class GoblinEnemy extends EnemyCharacter
      * extra 3 damage in addition to the base damage.
      */
     @Override
-    protected int modifier(Random randGenerator, int damage)
+    protected int modifier(int damage, Dice dice)
     {
         // 50% for an extra +3 damage
-        if (randGenerator.nextInt(100) < 50)
+        if (dice.roll(1, 100) < 50)
         {
             damage += 3;
         }

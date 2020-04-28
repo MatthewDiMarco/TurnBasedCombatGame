@@ -3,5 +3,5 @@ import model.items.Inventory;
 
 public interface ShopLoader 
 {
-    public Inventory load(String fileName);
+    public Inventory load(Inventory shop, String fileName);
 }

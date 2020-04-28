@@ -1,5 +1,7 @@
 package model.characters;
 import model.items.CharacterInventory;
+import model.items.EquipItem;
+import model.items.Dice;
 import java.util.*;
 
 /**
@@ -13,126 +15,123 @@ public class GameCharacter
     // Fields
     private String name;
     private int gold;
-    private boolean dead;
+    private int baseMinDamage;
+    private int baseMaxDamage;
+    private int baseMinDefence;
+    private int baseMaxDefence;
+
     protected CharacterInventory inventory;
     protected int currHealth;
     protected final int maxHealth;
-    protected Random generator;
+
+    // Observers
     private List<CharacterUpdateObservable> updateObservers;
     private List<CharacterActionObservable> actionObservers;
     private List<CharacterDieObservable> dieObservers;
 
     /**
      * Constructor.
-     * @param inName The character's name.
-     * @param inGold The character's starting gold.
-     * @param inMaxHealth The character's health cap.
-     * @param inInventory The character's items.
+     * @param inName Character name
+     * @param inGold Character starting gold
+     * @param inMaxHealth Character health capacity
+     * @param inMinA Minimum attack
+     * @param inMaxA Maximum attack
+     * @param inMinD Minimum defence
+     * @param inMaxD Maximum defence
+     * @param inInventory Inventory of item's
      */
     public GameCharacter(String inName, int inGold, int inMaxHealth,
+                         int inMinA, int inMaxA, int inMinD, int inMaxD,
                          CharacterInventory inInventory)
     {
+        // Init observer lists
         updateObservers = new ArrayList<CharacterUpdateObservable>();
         actionObservers = new ArrayList<CharacterActionObservable>();
         dieObservers = new ArrayList<CharacterDieObservable>();
 
-        setName(inName);
-        setGold(inGold);
+        // Validate ranges
         if (inMaxHealth <= 0)
         {
             throw new IllegalArgumentException(
                 "Character cannot have negative health"
             );
         }
-    
-        maxHealth = inMaxHealth;
-        setHealth(maxHealth);
-
-        if (inInventory == null)
+        else if (inMinA < 0 || inMaxA < 0 || inMinD < 0 || inMaxD < 0)
         {
             throw new IllegalArgumentException(
-                "Inventory must not be null"
+                "Attack and Defence must be >= 0"
+            );
+        }
+        else if (inMinA > inMaxA || inMinD > inMaxD)
+        {
+            throw new IllegalArgumentException(
+                "Attack and Defence must be >= 0"
             );
         }
 
+        // Set everything
+        setName(inName);
+        setGold(inGold);
+        baseMinDamage = inMinA;
+        baseMaxDamage = inMaxA;
+        baseMinDefence = inMinD;
+        baseMaxDefence = inMaxD;
+        maxHealth = inMaxHealth;
+        setHealth(maxHealth);
         inventory = inInventory;
-        generator = new Random();
-
-        dead = false;
     }
 
-    /**
-     * Name accessor.
-     * @return The character's name
-     */
     public String getName()
     {
         return name;
     }
 
-    /**
-     * Health accessor.
-     * @return The character's current health.
-     */
     public int getHealth()
     {
         return currHealth;
     }
 
-    /**
-     * Maximum Health accessor.
-     * @return The character's health capacity
-     */
     public int getMaxHealth()
     {
         return maxHealth;
     }
 
-    /**
-     * Gold accessor.
-     * @return The character's current coinage.
-     */
     public int getGold()
     {
         return gold; 
     }
 
-    /**
-     * Inventory accessor.
-     * @return The character's current items.
-     */
     public CharacterInventory getInventory()
     {
         return inventory;
     }
 
-    /**
-     * Dead/Alive Status accessor.
-     * @return True if character is dead.
-     */
-    public boolean isDead()
+    public String getAttackRange()
     {
-        return dead; 
+        int min = baseMinDamage;
+        int max = baseMaxDamage;
+        if (inventory.getWeapon() != null)
+        {
+            min += inventory.getWeapon().getMin();
+            max += inventory.getWeapon().getMax();
+        }
+
+        return min + " - " + max;
     }
 
-    /**
-     * A simple string representation of the character.
-     * @return A String containing health and gold.
-     */
-    public String toString()
+    public String getDefenceRange()
     {
-        return name + ", " + 
-               currHealth + "/" + maxHealth + " Health, " + 
-               inventory.getCurrAttackRange() + " Attack, " +
-               inventory.getCurrDefenceRange() + " Defence, " +
-               gold + "G";
+        int min = baseMinDefence;
+        int max = baseMaxDefence;
+        if (inventory.getArmour() != null)
+        {
+            min += inventory.getArmour().getMin();
+            max += inventory.getArmour().getMax();
+        }
 
+        return min + " - " + max;
     }
 
-    /**
-     * Name mutator.
-     * @param inName The character's new name
-     */
     public void setName(String inName)
     {
         if (inName.isEmpty())
@@ -146,10 +145,6 @@ public class GameCharacter
         this.notifyUpdateObservers();
     }
 
-    /**
-     * Gold mutator.
-     * @param inGold the Character's new gold.
-     */
     public void setGold(int inGold)
     {
         if (inGold < 0)
@@ -170,12 +165,11 @@ public class GameCharacter
      * Health.
      * @param inHealth The character's new health
      */
-    protected void setHealth(int inHealth)
+    public void setHealth(int inHealth)
     {
         if (inHealth <= 0)
         {
             currHealth = 0;
-            dead = true;
             this.notifyDieObservers();
         }
         else if (inHealth > maxHealth) // Stop health exceeding max
@@ -191,53 +185,76 @@ public class GameCharacter
     }
 
     /**
-     * Produces a number denoting the amount to subtract from an 
-     * opponent's health.
-     * @return The total damage
+     * Character will consume (remove) an item from their inventory at index.
+     * If it is a non-consumable, inventory will throw an exception.
      */
-    public int attack()
+    public int consumeItem(int index, Dice dice)
     {
-        String msg = "";
         int dmg = 0;
-
-        int effect = inventory.usePotion(generator);
-        if (effect > 0) // It's a healing potion
+        int effect = inventory.useItem(index, dice);
+        if (effect > 0) // Healing item
         {
-            this.setHealth(currHealth + effect); 
-            msg = name + " HEALED " + effect + " points of Health";
+            this.setHealth(getHealth() + effect);
         }
-        else if (effect < 0) // It's a damage potion
+        else // Damage item
         {
             dmg = Math.abs(effect);
-            msg = name + " ATTACKED with " + dmg + " points of Damage";
-        }
-        else // No potion equiped. Use weapon (including enchantments) instead.
-        {
-            dmg = inventory.useWeapon(generator);
-            msg = name + " ATTACKED with " + dmg + " points of Damage";
         }
 
-        this.notifyActionObservers(msg);
         return dmg;
+    }
+
+    /**
+     * Produces a number denoting the amount of damage to inflict upon an
+     * opponent.
+     * @param dice Random generator
+     * @return The total damage
+     */
+    public int attack(Dice dice)
+    {
+        int dmg = 0;
+
+        // Calculate base damage
+        dmg += dice.roll(baseMinDamage, baseMaxDamage);
+
+        // If the character has a weapon, use it and append it's damage
+        dmg += inventory.useWeapon(dice);
+
+        // Update the battle
+        this.notifyActionObservers(name + " ATTACKED for " + 
+                                   dmg + " points of DAMAGE");
+
+        return dmg; 
     }
 
     /**
      * Absorbs an opponent's incomming attack and reduces the Character's
      * health accordingly.
-     * @param dmg The damage to be absorbed
+     * @param dmg The incomming damage
+     * @param dice Random generator
      */
-    public void defend(int dmg)
+    public void defend(int dmg, Dice dice)
     {
-        String msg = "";
+        int def = 0;
 
-        int def = inventory.useArmour(generator);
-        msg = name + " ABSORBED " + def + " points of Damage";
-        this.notifyActionObservers(msg);
+        // Calculate base defence
+        def += dice.roll(baseMinDefence, baseMaxDefence);
 
+        // If the character has armour, use it to absorb damage
+        def += inventory.useArmour(dice);
+
+        // Update the battle
+        this.notifyActionObservers(name + " ABSORBED " + 
+                                   def + " points of DAMAGE");
+
+        // Take damage
         int oldHealth = this.getHealth();
         this.setHealth(currHealth - Math.max(0, dmg - def));
-        msg = name + " LOST " + (oldHealth - this.getHealth()) + " points of Health";
-        this.notifyActionObservers(msg);
+
+        // Update the battle
+        this.notifyActionObservers(name + " LOST " + 
+                                  (oldHealth - this.getHealth()) + 
+                                  " points of Health");
     }
 
     public void addUpdateObserver(CharacterUpdateObservable ob)
