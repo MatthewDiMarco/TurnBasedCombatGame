@@ -1,6 +1,9 @@
 package view;
 import model.characters.CharacterUpdateObservable;
 import model.characters.GameCharacter;
+import model.items.CharacterInventory;
+import model.items.InventoryUpdateObservable;
+
 import javax.swing.*;
 import java.awt.*;
 

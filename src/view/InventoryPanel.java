@@ -1,10 +1,8 @@
 package view;
 import model.items.InventoryUpdateObservable;
 import model.items.CharacterInventory;
-import model.characters.GameCharacter;
 import model.items.Item;
 import javax.swing.*;
-import java.awt.BorderLayout;
 import java.util.*;
 
 /**
@@ -45,8 +43,8 @@ public class InventoryPanel extends ViewPanel implements InventoryUpdateObservab
         Vector<String> inv = new Vector<String>();
         for (Item ii : inItems)
         {
-            inv.add(ii.getCost() + " G" + Item.SPACING +  
-                    ii.toString() + Item.SPACING + 
+            inv.add(ii.getCost() + " G" + "   " +  
+                    ii.toString() + "   " + 
                     ii.getEffectRange());
         }
 

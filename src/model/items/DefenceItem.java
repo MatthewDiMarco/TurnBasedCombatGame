@@ -1,10 +1,11 @@
 package model.items;
-import java.util.*;
+import model.characters.CharacterException;
+import model.characters.GameCharacter;
 
 /**
  * Armour is used to defend it's host from blows.
  */
-public class DefenceItem extends EquipItem
+public class DefenceItem extends Item
 {
     private String material;
 
@@ -19,7 +20,7 @@ public class DefenceItem extends EquipItem
     public DefenceItem(String inName, int inCost, int inMinEff, int inMaxEff, 
                        String inMat)
     {
-        super(inName, inCost, inMinEff, inMaxEff, EquipItem.EquipType.ARMOUR);
+        super(inName, inCost, inMinEff, inMaxEff);
         if (inMat.isEmpty())
         {
             throw new IllegalArgumentException(
@@ -40,5 +41,18 @@ public class DefenceItem extends EquipItem
     public String getEffectRange()
     {
         return super.getEffectRange() + " Defence";
+    }
+
+    @Override
+    public void interactWith(GameCharacter character) throws ItemInteractionException
+    {
+        try
+        {
+            character.setArmour(this);
+        }
+        catch (CharacterException e)
+        {
+            throw new ItemInteractionException(e.getMessage());
+        }
     }
 }

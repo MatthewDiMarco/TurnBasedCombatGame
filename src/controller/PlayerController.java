@@ -1,4 +1,5 @@
 package controller;
+import model.characters.CharacterException;
 import model.characters.GameCharacter;
 import model.items.*;
 
@@ -16,23 +17,28 @@ public class PlayerController
         return controller.getPlayer();
     }
 
-    public void changePlayerName(String newName)
+    public void changePlayerName(String newName) throws GameStateException
     {
-        controller.getPlayer().setName(newName);
+        try
+        {
+            controller.getPlayer().setName(newName);
+        }
+        catch (CharacterException e)
+        {
+            throw new GameStateException(e.getMessage());
+        }
     }
 
-    public void equipItem(int index)
+    public void interact(int index) throws GameStateException
     {
-        //
-    }
-
-    public void sellItem(int index)
-    {
-        //
-    }
-
-    public void prepPotion(int index)
-    {
-        //
+        Item item = controller.getPlayer().getInventory().getItem(index);
+        try
+        {
+            item.interactWith(controller.getPlayer());
+        }
+        catch (ItemInteractionException e)
+        {
+            throw new GameStateException(e.getMessage());
+        }
     }
 }

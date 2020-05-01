@@ -1,9 +1,5 @@
 package controller;
-import model.items.Inventory;
-import model.items.Item;
-import model.items.WeaponItem;
-import model.items.DefenceItem;
-import model.items.ConsumableItem;
+import model.items.*;
 import java.io.*;
 
 public class CSVFileLoader implements ShopLoader
@@ -71,7 +67,7 @@ public class CSVFileLoader implements ShopLoader
                     // If no errors were thrown, then add the item
                     shop.addItem(item);
                 }
-                catch (IllegalArgumentException e)
+                catch (IllegalArgumentException | InventoryException e)
                 {
                     valid = false;
                     System.out.println("Error at line " + lineNum +
@@ -162,7 +158,7 @@ public class CSVFileLoader implements ShopLoader
             );
         }
 
-        // Try constructing a weapon
+        // Try constructing Armour
         try
         {
             item = new DefenceItem(
@@ -184,9 +180,9 @@ public class CSVFileLoader implements ShopLoader
     /**
      * Build and return a PotionItem given the line arguments
      */
-    private static ConsumableItem processPotion(String[] args)
+    private static Item processPotion(String[] args)
     {
-        ConsumableItem item;
+        Item item;
 
         // Check all the arguments are there
         if (args.length < 6)
@@ -197,16 +193,32 @@ public class CSVFileLoader implements ShopLoader
             );
         }
 
-        // Try constructing a weapon
+        // Try constructing a Potion
         try
         {
-            item = new ConsumableItem(
-                args[1],                    // name
-                Integer.parseInt(args[4]),  // cost 
-                Integer.parseInt(args[2]),  // min eff
-                Integer.parseInt(args[3]),  // max eff
-                args[5].toCharArray()[0]    // healing/damage type
-            );
+            switch (args[5].toCharArray()[0])
+            {
+                case 'H':
+                    item = new HealingPotion(
+                        args[1],                    // name
+                        Integer.parseInt(args[4]),  // cost 
+                        Integer.parseInt(args[2]),  // min eff
+                        Integer.parseInt(args[3])   // max eff
+                    );
+                    break;
+                case 'D':
+                    item = new DamagePotion(
+                        args[1],                    // name
+                        Integer.parseInt(args[4]),  // cost 
+                        Integer.parseInt(args[2]),  // min eff
+                        Integer.parseInt(args[3])   // max eff
+                    );
+                    break;
+                default:
+                    throw new IllegalArgumentException(
+                        "Must specify H or D for potion"
+                    );
+            }
         }
         catch (IllegalArgumentException e) //todo: will catch custom ones here
         {

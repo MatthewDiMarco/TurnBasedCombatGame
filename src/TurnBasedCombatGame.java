@@ -20,18 +20,55 @@ public class TurnBasedCombatGame
         // Initialise Player
         CharacterInventory inventory = new CharacterInventory();
 
-        inventory.addItem(
-            new WeaponItem(
-                "Short Sword", 12,
-                2, 4, "Slashing", "Blade"
-            )
-        );
-        inventory.addItem(
-            new DefenceItem(
-                "Chest Plate", 20,
-                3, 5, "Iron"
-            )
-        );
+        try
+        {
+
+            inventory.addItem(
+                new WeaponItem(
+                    "Short Sword", 12,
+                    2, 4, "Slashing", "Blade"
+                )
+            );
+            inventory.addItem(
+                new DefenceItem(
+                    "Chest Plate", 20,
+                    3, 5, "Iron"
+                )
+            );
+
+            //TEMP
+
+            inventory.addItem(
+                new WeaponItem(
+                    "Long Sword", 15,
+                    20, 35, "Pierceing", "Blade"
+                )
+            );
+            inventory.addItem(
+                new DefenceItem(
+                    "Helm", 5,
+                    1, 3, "Iron"
+                )
+            );
+            inventory.addItem(
+                new HealingPotion(
+                    "Medicine", 2,
+                    4, 8
+                )
+            );
+            inventory.addItem(
+                new DamagePotion(
+                    "Wild Fire", 35,
+                    20, 30
+                )
+            );
+        }
+        catch (InventoryException e)
+        {
+            System.out.println(e.getMessage());
+        }
+
+        // END TEMP
 
         GameCharacter player = new GameCharacter(
             "No Name", GOLD, MAX_HEALTH, 
@@ -39,8 +76,15 @@ public class TurnBasedCombatGame
             inventory
         );
 
-        inventory.equip(0);
-        inventory.equip(1);
+        try
+        {
+            inventory.getItem(0).interactWith(player);
+            inventory.getItem(1).interactWith(player);
+        }
+        catch (Exception e)
+        {
+            System.out.println(e.getMessage());
+        }
 
         MainController controller = new MainController(player);
         ShopController shopCon = new ShopController(new Inventory());

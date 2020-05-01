@@ -1,5 +1,9 @@
 package controller;
+import model.characters.CharacterException;
+import model.characters.GameCharacter;
+import model.items.GameStateException;
 import model.items.Inventory;
+import model.items.InventoryException;
 import model.items.Item;
 import java.util.*;
 
@@ -34,8 +38,42 @@ public class ShopController
         return enchantments;
     }
 
-    public void sellItem()
+    public void sellItem(GameCharacter character, int index) throws GameStateException
     {
-        //check: selling item is not currently equiped
+        Item item = character.getInventory().getItem(index);
+        try
+        {
+            character.getInventory().removeItem(index);
+            character.setGold(character.getGold() + ((int)(item.getCost() / 2)));
+        }
+        catch (InventoryException e)
+        {
+            throw new GameStateException(e.getMessage());
+        }
+    }
+
+    public void buyItem(GameCharacter character, int index) throws GameStateException
+    {
+        int oldGold = character.getGold();
+        try
+        {
+            // Get the desired item
+            Item item = shopItems.getItem(index);
+
+            // Try pay up 
+            character.setGold(character.getGold() - item.getCost());
+
+            // Try add to player's inventory
+            character.getInventory().addItem(item);
+        }
+        catch (InventoryException e)
+        {
+            character.setGold(oldGold); // Refund
+            throw new GameStateException(e.getMessage());
+        }
+        catch (CharacterException e)
+        {
+            throw new GameStateException(e.getMessage());
+        }
     }
 }

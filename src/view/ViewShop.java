@@ -1,4 +1,5 @@
 package view;
+import model.items.GameStateException;
 import model.items.Item;
 import controller.*;
 import javax.swing.*;
@@ -92,10 +93,9 @@ public class ViewShop extends ViewPanel
                         // Try buying
                         try
                         {
-                            //todo
-                            System.out.println("*BOUGHT*");
+                            shopCon.buyItem(playerCon.getPlayer(), itemIndex);
                         }
-                        catch (IllegalArgumentException e2)
+                        catch (GameStateException e2)
                         {
                             // Controller will let us know of problems
                             JOptionPane.showMessageDialog(
@@ -140,8 +140,18 @@ public class ViewShop extends ViewPanel
                     int itemIndex = playerItems.getItemIndex();
                     if (itemIndex != -1)
                     {
-                        //todo
-                        System.out.println("*SOLD*");
+                        // Try buying
+                        try
+                        {
+                            shopCon.sellItem(playerCon.getPlayer(), itemIndex);
+                        }
+                        catch (GameStateException e2)
+                        {
+                            // Controller will let us know of problems
+                            JOptionPane.showMessageDialog(
+                                null, e2.getMessage()
+                            );
+                        }
                     }
                 }
             }

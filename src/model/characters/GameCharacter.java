@@ -1,7 +1,11 @@
 package model.characters;
 import model.items.CharacterInventory;
-import model.items.EquipItem;
+import model.items.DamageItem;
+import model.items.DamagePotion;
+import model.items.DefenceItem;
 import model.items.Dice;
+import model.items.InventoryException;
+
 import java.util.*;
 
 /**
@@ -50,7 +54,13 @@ public class GameCharacter
         dieObservers = new ArrayList<CharacterDieObservable>();
 
         // Validate ranges
-        if (inMaxHealth <= 0)
+        if (inName.isEmpty())
+        {
+            throw new IllegalArgumentException(
+                "Character must have a name"
+            );
+        }
+        else if (inMaxHealth <= 0)
         {
             throw new IllegalArgumentException(
                 "Character cannot have negative health"
@@ -68,10 +78,16 @@ public class GameCharacter
                 "Attack and Defence must be >= 0"
             );
         }
+        else if (inGold < 0)
+        {
+            throw new IllegalArgumentException(
+                "Gold must be >= 0"
+            );
+        }
 
         // Set everything
-        setName(inName);
-        setGold(inGold);
+        name = inName;
+        gold = inGold;
         baseMinDamage = inMinA;
         baseMaxDamage = inMaxA;
         baseMinDefence = inMinD;
@@ -132,26 +148,60 @@ public class GameCharacter
         return min + " - " + max;
     }
 
-    public void setName(String inName)
+    public void setWeapon(DamageItem inWeapon) throws CharacterException
+    {
+        try
+        {
+            inventory.setWeapon(inWeapon);
+            this.notifyUpdateObservers();
+        }
+        catch (InventoryException e)
+        {
+            throw new CharacterException(e.getMessage());
+        }
+    }
+
+    public void setArmour(DefenceItem inArmour) throws CharacterException
+    {
+        try
+        {
+            inventory.setArmour(inArmour);
+            this.notifyUpdateObservers();
+        }
+        catch (InventoryException e)
+        {
+            throw new CharacterException(e.getMessage());
+        }
+    }
+
+    public void setPotion(DamagePotion inPotion) throws CharacterException
+    {
+        try
+        {
+            inventory.setPotion(inPotion);
+        }
+        catch (InventoryException e)
+        {
+            throw new CharacterException(e.getMessage());
+        }
+    }
+
+    public void setName(String inName) throws CharacterException
     {
         if (inName.isEmpty())
         {
-            throw new IllegalArgumentException(
-                "Character must have a name"
-            );
+            throw new CharacterException("Character must have a name");
         }
         
         name = inName;
         this.notifyUpdateObservers();
     }
 
-    public void setGold(int inGold)
+    public void setGold(int inGold) throws CharacterException
     {
         if (inGold < 0)
         {
-            throw new IllegalArgumentException(
-                "cannot own negative gold"
-            );
+            throw new CharacterException("Gold must be >= 0");
         }
         else
         {
@@ -185,26 +235,6 @@ public class GameCharacter
     }
 
     /**
-     * Character will consume (remove) an item from their inventory at index.
-     * If it is a non-consumable, inventory will throw an exception.
-     */
-    public int consumeItem(int index, Dice dice)
-    {
-        int dmg = 0;
-        int effect = inventory.useItem(index, dice);
-        if (effect > 0) // Healing item
-        {
-            this.setHealth(getHealth() + effect);
-        }
-        else // Damage item
-        {
-            dmg = Math.abs(effect);
-        }
-
-        return dmg;
-    }
-
-    /**
      * Produces a number denoting the amount of damage to inflict upon an
      * opponent.
      * @param dice Random generator
@@ -218,7 +248,7 @@ public class GameCharacter
         dmg += dice.roll(baseMinDamage, baseMaxDamage);
 
         // If the character has a weapon, use it and append it's damage
-        dmg += inventory.useWeapon(dice);
+        dmg += inventory.getWeapon().getEffect(dice);
 
         // Update the battle
         this.notifyActionObservers(name + " ATTACKED for " + 
@@ -241,7 +271,7 @@ public class GameCharacter
         def += dice.roll(baseMinDefence, baseMaxDefence);
 
         // If the character has armour, use it to absorb damage
-        def += inventory.useArmour(dice);
+        def += inventory.getArmour().getEffect(dice);
 
         // Update the battle
         this.notifyActionObservers(name + " ABSORBED " + 

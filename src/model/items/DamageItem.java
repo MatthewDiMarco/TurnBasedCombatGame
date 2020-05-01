@@ -1,10 +1,12 @@
 package model.items;
+import model.characters.CharacterException;
+import model.characters.GameCharacter;
 
 /**
  * Weapons are used to deal damage to an opponent.
  * They can be granted enchantments to extend their destructive potential.
  */
-public abstract class DamageItem extends EquipItem
+public abstract class DamageItem extends Item
 {
     protected String dmgType;
 
@@ -19,7 +21,7 @@ public abstract class DamageItem extends EquipItem
     public DamageItem(String inName, int inCost, int inMinEff, int inMaxEff, 
                       String inDmgType)
     {
-        super(inName, inCost, inMinEff, inMaxEff, EquipItem.EquipType.WEAPON);
+        super(inName, inCost, inMinEff, inMaxEff);
         if (inDmgType.isEmpty())
         {
             throw new IllegalArgumentException(
@@ -33,5 +35,18 @@ public abstract class DamageItem extends EquipItem
     public String getDamageType()
     {
         return dmgType;
+    }
+
+    @Override
+    public void interactWith(GameCharacter character) throws ItemInteractionException
+    {
+        try
+        {
+            character.setWeapon(this);
+        }
+        catch (CharacterException e)
+        {
+            throw new ItemInteractionException(e.getMessage());
+        }
     }
 }

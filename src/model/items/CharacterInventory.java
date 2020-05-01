@@ -7,8 +7,9 @@ import java.util.*;
 public class CharacterInventory extends Inventory 
 {
     public static final int CAPACITY = 15;
-    private EquipItem currWeapon;
-    private EquipItem currArmour;
+    private DamageItem currWeapon;
+    private DefenceItem currArmour;
+    private DamagePotion currPotion;
     private List<InventoryUpdateObservable> updateObservers;
 
     public CharacterInventory() 
@@ -17,97 +18,86 @@ public class CharacterInventory extends Inventory
         updateObservers = new ArrayList<InventoryUpdateObservable>();
         currWeapon = null;
         currArmour = null;
+        currPotion = null;
     }
 
-    public EquipItem getWeapon()
+    public DamageItem getWeapon()
     {
         return currWeapon;
     }
 
-    public EquipItem getArmour()
+    public DefenceItem getArmour()
     {
         return currArmour;
     }
 
-    public int useWeapon(Dice dice)
+    public void setWeapon(DamageItem inWeapon) throws InventoryException
     {
-        int dmg = 0;
-        if (currWeapon != null)
+        boolean inInventory = false;
+        for (Item ii : super.getItems())
         {
-            dmg += currWeapon.getEffect(dice);
+            if (inWeapon == ii)
+            {
+                inInventory = true;
+            }
         }
-        return dmg;
-    }
-
-    public int useArmour(Dice dice)
-    {
-        int def = 0;
-        if (currArmour != null)
+    
+        if (!inInventory)
         {
-            def += currArmour.getEffect(dice);
-        }
-        return def;
-    }
-
-    public int useItem(int index, Dice dice)
-    {
-        // Try getting item
-        ConsumableItem item;
-        try
-        {
-            item = (ConsumableItem)this.getItem(index);
-        }
-        catch(ClassCastException e)
-        {
-            throw new IllegalArgumentException("Not a consumable item");
-            //throw new ItemNotConsumableException();
-        }
-
-        // Use the item
-        int effect = item.getEffect(dice); // damage items will return negative
-
-        // Once 'consumed', remove from inventory
-        this.removeItem(index);
-
-        return effect;
-    }
-
-    /**
-     * 
-     * @param index
-     */
-    public void equip(int index)
-    {
-        // Get the equipment
-        EquipItem equipment;
-        try
-        {
-            equipment = (EquipItem)getItem(index);
-        }
-        catch (ClassCastException e)
-        {
-            throw new IllegalArgumentException("Not equipable");
-            // throw new NotEquipableException(); todo
+            throw new InventoryException(
+                "Weapon must be inside inventory to equip"
+            );
         }
         
-        // If no exceptions were raised, it's either WEAPON or ARMOUR
-        EquipItem.EquipType type = equipment.getEquipType();
-        switch (type)
-        {
-            case WEAPON:
-                currWeapon = equipment;
-                break;
-
-            case ARMOUR:
-                currArmour = equipment;
-                break;
-        }
-
+        this.currWeapon = inWeapon;
         this.notifyUpdateObservers();
     }
 
+    public void setArmour(DefenceItem inArmour) throws InventoryException
+    {
+        boolean inInventory = false;
+        for (Item ii : super.getItems())
+        {
+            if (inArmour == ii)
+            {
+                inInventory = true;
+            }
+        }
+
+        if (!inInventory)
+        {
+            throw new InventoryException(
+                "Armour must be inside inventory to equip"
+            );
+        }
+
+        this.currArmour = inArmour;
+        this.notifyUpdateObservers();
+    }
+
+    public void setPotion(DamagePotion inPotion) throws InventoryException
+    {
+        boolean inInventory = false;
+        for (Item ii : super.getItems())
+        {
+            if (inPotion == ii)
+            {
+                inInventory = true;
+            }
+        }
+
+        if (!inInventory)
+        {
+            throw new InventoryException(
+                "Potion must be inside inventory to equip"
+            );
+        }
+
+        this.currPotion = inPotion;
+    }
+
     @Override
-    public void addItem(Item inItem)
+    public void addItem(Item inItem) throws InventoryException
     {
         if (numItems < CAPACITY)
         {
@@ -117,18 +107,32 @@ public class CharacterInventory extends Inventory
         else
         {
             //todo exception here
-            throw new IllegalArgumentException("Inventory full");
+            throw new InventoryException(
+                "Invantory at max capacity (" + CAPACITY + " items)"
+            );
         }
     } 
 
+    public void removeItem(Item inItem) throws InventoryException
+    {
+        List<Item> items = super.getItems();
+        for (int ii = 0; ii < items.size(); ii++)
+        {
+            if (items.get(ii) == inItem)
+            {
+                this.removeItem(ii);
+                this.notifyUpdateObservers();
+            }
+        }
+    }
+
     @Override
-    public void removeItem(int index)
+    public void removeItem(int index) throws InventoryException
     {
         if (this.getItem(index) == currWeapon || 
             this.getItem(index) == currArmour)
         {
-            throw new IllegalArgumentException("Can't remove equiped items");
-            //todo throw IsEquipedException();
+            throw new InventoryException("Can't remove equiped items");
         }
 
         super.removeItem(index);

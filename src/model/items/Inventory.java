@@ -1,5 +1,4 @@
 package model.items;
-import model.exceptions.*;
 import java.util.*;
 
 /**
@@ -7,7 +6,7 @@ import java.util.*;
  */
 public class Inventory
 {
-    protected ArrayList<Item> items;
+    private ArrayList<Item> items;
     protected int numItems;
 
     public Inventory() 
@@ -31,13 +30,13 @@ public class Inventory
         return items;
     }
 
-    public void addItem(Item inItem)
+    public void addItem(Item inItem) throws InventoryException
     {
         items.add(inItem);
         numItems++;
     }
 
-    public void removeItem(int index)
+    public void removeItem(int index) throws InventoryException
     {
         items.remove(index);
         numItems--;

@@ -1,4 +1,5 @@
 package model.items;
+import model.characters.GameCharacter;
 
 /**
  * Generic representation of the 'Item' entity. Items can take on many forms.
@@ -8,8 +9,6 @@ package model.items;
  */
 public abstract class Item
 {
-    public static final String SPACING = "     ";
-
     private int cost;
     protected String name;
     protected int minEffect;
@@ -91,5 +90,10 @@ public abstract class Item
         return maxEffect;
     }
     
-    abstract public String toString();
+    public String toString()
+    {
+        return name;
+    }
+
+    abstract public void interactWith(GameCharacter character) throws ItemInteractionException;
 }

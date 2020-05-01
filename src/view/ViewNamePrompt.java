@@ -1,5 +1,7 @@
 package view;
 import controller.PlayerController;
+import model.items.GameStateException;
+
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.event.*;
@@ -62,7 +64,7 @@ public class ViewNamePrompt extends ViewPanel
                     {
                         playerCon.changePlayerName(newName);
                     }
-                    catch (IllegalArgumentException e2)
+                    catch (GameStateException e2)
                     {
                         // Controller will let us know of problems
                         JOptionPane.showMessageDialog(

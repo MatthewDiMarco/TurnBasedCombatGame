@@ -2,6 +2,7 @@ package view;
 import controller.PlayerController;
 import model.items.InventoryUpdateObservable;
 import model.items.CharacterInventory;
+import model.items.GameStateException;
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
@@ -33,6 +34,8 @@ public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
         selectBtn = new JButton("Equip");
         currWeaponLbl = new JLabel("Equiped Weapon: ");
         currArmourLbl = new JLabel("Equiped Armour: ");
+
+        inPlayerCon.getPlayer().getInventory().addUpdateObserver(this);
     }
 
     @Override
@@ -66,17 +69,20 @@ public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    try
+                    int itemIndex = invPane.getItemIndex();
+                    if (itemIndex != -1)
                     {
-                        //todo
-                        System.out.println("*EQUIPED*");
-                    }
-                    catch (IllegalArgumentException e2)
-                    {
-                        // Controller will let us know of problems
-                        JOptionPane.showMessageDialog(
-                            null, e2.getMessage()
-                        );
+                        try
+                        {
+                            playerCon.interact(itemIndex);
+                        }
+                        catch (GameStateException e2)
+                        {
+                            // Controller will let us know of problems
+                            JOptionPane.showMessageDialog(
+                                null, e2.getMessage()
+                            );
+                        }
                     }
                 }
             }
@@ -87,8 +93,8 @@ public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
     public void updateInventory(CharacterInventory inv)
     {
         currWeaponLbl.setText("Equiped Weapon: " + inv.getWeapon().toString() + 
-                              " " + inv.getWeapon().getEffectRange());
+                              "   " + inv.getWeapon().getEffectRange());
         currArmourLbl.setText("Equiped Armour: " + inv.getArmour().toString() + 
-                              " " + inv.getWeapon().getEffectRange());
+                              "   " + inv.getArmour().getEffectRange());
     }
 }

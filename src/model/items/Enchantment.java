@@ -45,6 +45,6 @@ public abstract class Enchantment extends DamageItem
     @Override
     public String toString()
     {
-        return next.toString() + SPACING + this.name;
+        return next.toString() + "   " + this.name;
     } 
 }

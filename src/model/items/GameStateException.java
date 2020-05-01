@@ -1,4 +1,4 @@
-package model.exceptions;
+package model.items;
 
 /**
  * All exceptions relating to illegal game model state will extend this.

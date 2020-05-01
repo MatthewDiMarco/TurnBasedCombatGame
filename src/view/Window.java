@@ -161,6 +161,8 @@ public class Window extends JFrame
                 }
             }
         );
+
+        this.setView("NAME");
     }
 
     public void setView(String name)
