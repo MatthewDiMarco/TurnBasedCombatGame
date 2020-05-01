@@ -20,6 +20,62 @@ public class TurnBasedCombatGame
         // Initialise Player
         CharacterInventory inventory = new CharacterInventory();
 
+        inventory.addItem(
+            new WeaponItem(
+                "Short Sword", 12,
+                2, 4, "Slashing", "Blade"
+            )
+        );
+        inventory.addItem(
+            new DefenceItem(
+                "Chest Plate", 20,
+                3, 5, "Iron"
+            )
+        );
+
+        GameCharacter player = new GameCharacter(
+            "No Name", GOLD, MAX_HEALTH, 
+            0, 0, 0, 0, 
+            inventory
+        );
+
+        inventory.equip(0);
+        inventory.equip(1);
+
+        MainController controller = new MainController(player);
+        ShopController shopCon = new ShopController(new Inventory());
+        shopCon.loadShop("resources/shopdata.csv");
+        PlayerController playerCon = new PlayerController(controller);
+        BattleController battleCon = new BattleController(new Dice(), new EnemyFactory());
+
+        // Views
+        ViewShop shopView = new ViewShop(shopCon, playerCon);
+        shopView.init();
+        ViewEquip equipView = new ViewEquip(playerCon);
+        equipView.init();
+        ViewNamePrompt nameView = new ViewNamePrompt(playerCon);
+        nameView.init();
+        ViewBattle battleView = new ViewBattle(battleCon, playerCon);
+        battleView.init();
+
+        // Run
+        SwingUtilities.invokeLater(
+            new Runnable()
+            {
+                public void run()
+                {
+                    Window game = new Window(controller);
+                    game.start(shopView, equipView, nameView, battleView);
+                    game.setVisible(true);
+                }
+            }
+        );
+
+        /*
+
+        // Initialise Player
+        CharacterInventory inventory = new CharacterInventory();
+
         // todo: pass inventory to shop to get the cheap items
 
         inventory.addItem(
@@ -75,6 +131,11 @@ public class TurnBasedCombatGame
                 }
             }
         );
+
+        */
+
+
+
 
         /*
         CharacterInventory inv1 = new CharacterInventory();

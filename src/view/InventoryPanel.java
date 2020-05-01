@@ -4,33 +4,31 @@ import model.items.CharacterInventory;
 import model.characters.GameCharacter;
 import model.items.Item;
 import javax.swing.*;
+import java.awt.BorderLayout;
 import java.util.*;
 
 /**
  * Draws a game character's stats.
  */
-public class InventoryPanel extends JPanel implements InventoryUpdateObservable
+public class InventoryPanel extends ViewPanel implements InventoryUpdateObservable
 {
     private JList<String> items;
     private JScrollPane invPane;
-    private EquipedPanel equipedPane;
 
     /**
      * Constructor.
      * @param inv The Inventory to display
      */
-    public InventoryPanel(CharacterInventory inv, GameCharacter player) 
+    public InventoryPanel(CharacterInventory inv) 
     {
-        super();
+        super("", 0);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         items = new JList<String>();
         items.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
         invPane = new JScrollPane(items);
-        equipedPane = new EquipedPanel(inv);
         
         this.add(invPane);
-        this.add(equipedPane);
         inv.addUpdateObserver(this);
         updateInventory(inv);
     }
@@ -53,5 +51,11 @@ public class InventoryPanel extends JPanel implements InventoryUpdateObservable
         }
 
         items.setListData(inv);
+    }
+
+    @Override
+    public void init()
+    {
+        //todo
     }
 }

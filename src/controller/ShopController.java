@@ -1,7 +1,6 @@
 package controller;
 import model.items.Inventory;
 import model.items.Item;
-import model.items.Enchantment;
 import java.util.*;
 
 public class ShopController 

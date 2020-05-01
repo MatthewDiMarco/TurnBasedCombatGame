@@ -4,28 +4,21 @@ import model.items.*;
 
 public class PlayerController 
 {
-    GameCharacter player;
-    CharacterInventory inv;
+    MainController controller;
 
-    public PlayerController(GameCharacter inPlayer, CharacterInventory inInventory)
+    public PlayerController(MainController inController)
     {
-        player = inPlayer;
-        inv = inInventory;        
+        controller = inController;
     }
 
     public GameCharacter getPlayer()
     {
-        return player;
-    }
-
-    public CharacterInventory getInventory()
-    {
-        return player.getInventory();
+        return controller.getPlayer();
     }
 
     public void changePlayerName(String newName)
     {
-        player.setName(newName);
+        controller.getPlayer().setName(newName);
     }
 
     public void equipItem(int index)
