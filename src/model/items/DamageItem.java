@@ -42,7 +42,14 @@ public abstract class DamageItem extends Item
     {
         try
         {
-            character.setWeapon(this);
+            if (character.isFighting())
+            {
+                throw new ItemInteractionException("You cannot equip weapons while in battle");
+            }
+            else
+            {
+                character.setWeapon(this);
+            }
         }
         catch (CharacterException e)
         {

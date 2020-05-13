@@ -1,17 +1,23 @@
 package view;
 import controller.*;
+import model.characters.CharacterActionObservable;
+import model.characters.CharacterDeathObservable;
+import model.items.GameStateException;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.event.*;
+import java.util.*;
 
-public class ViewBattle extends ViewPanel
+public class ViewBattle extends ViewPanel implements CharacterActionObservable,
+                                                     CharacterDeathObservable
 {
     // Widgets
     private JPanel userOptions;
     private CharacterStatsPanel enemyStats;
     private InventoryPanel playerInventory;
     private JList<String> messages;
+    private JScrollPane feed;
     private JButton attackBtn;
     private JButton usePotionBtn;
     private JButton selectBtn;
@@ -34,10 +40,14 @@ public class ViewBattle extends ViewPanel
         playerInventory = new InventoryPanel(playerCon.getPlayer().getInventory());
         messages = new JList<String>(new DefaultListModel<String>());
         messages.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        feed = new JScrollPane(messages);
         attackBtn = new JButton("Attack");
         usePotionBtn = new JButton("Use Potion");
         selectBtn = new JButton("Select");
         backBtn = new JButton("Back");
+
+        playerCon.getPlayer().addActionObserver(this);
+        playerCon.getPlayer().addDeathObserver(this);
     }
 
     @Override
@@ -51,7 +61,7 @@ public class ViewBattle extends ViewPanel
         msgToolbar.setFloatable(false);
         msgToolbar.add(attackBtn);
         msgToolbar.add(usePotionBtn);
-        JScrollPane feed = new JScrollPane(messages);
+
         messagePane.add(msgToolbar, BorderLayout.NORTH);
         messagePane.add(feed, BorderLayout.CENTER);
 
@@ -84,18 +94,7 @@ public class ViewBattle extends ViewPanel
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    try
-                    {
-                        //todo
-                        System.out.println("*ATTACK*");
-                    }
-                    catch (IllegalArgumentException e2)
-                    {
-                        // Controller will let us know of problems
-                        JOptionPane.showMessageDialog(
-                            null, e2.getMessage()
-                        );
-                    }
+                    battleCon.endTurn();
                 }
             }
         );
@@ -106,17 +105,22 @@ public class ViewBattle extends ViewPanel
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    try
+                    int itemIndex = playerInventory.getItemIndex();
+                    if (itemIndex != -1)
                     {
-                        //todo
-                        System.out.println("*SELECTED ITEM*");
-                    }
-                    catch (IllegalArgumentException e2)
-                    {
-                        // Controller will let us know of problems
-                        JOptionPane.showMessageDialog(
-                            null, e2.getMessage()
-                        );
+                        try
+                        {
+                            playerCon.interact(itemIndex);
+                            battleCon.endTurn();
+                            view.setPane("MSG");
+                        }
+                        catch (GameStateException e2)
+                        {
+                            // Controller will let us know of problems
+                            JOptionPane.showMessageDialog(
+                                null, e2.getMessage()
+                            );
+                        }
                     }
                 }
             }
@@ -150,4 +154,50 @@ public class ViewBattle extends ViewPanel
         CardLayout cl = (CardLayout)(userOptions.getLayout());
         cl.show(userOptions, name);
     }   
+
+    public void newBattle()
+    {
+        battleCon.newBattle();
+        battleCon.getEnemy().addActionObserver(this);
+        battleCon.getEnemy().addUpdateObserver(enemyStats);
+        battleCon.getEnemy().addDeathObserver(this);
+        enemyStats.updateCharacter(battleCon.getEnemy());
+        ((DefaultListModel<String>)messages.getModel()).removeAllElements();
+    }
+
+    @Override
+    public void updateBattle(String msg)
+    {
+        ((DefaultListModel<String>)messages.getModel()).addElement(" ");
+        ((DefaultListModel<String>)messages.getModel()).addElement(msg);
+        
+        // Keep the scroll bar at the bottom (w/ most recent messages)
+        SwingUtilities.invokeLater(
+        () -> 
+            {
+                JScrollBar bar = feed.getVerticalScrollBar();
+                bar.setValue(bar.getMaximum());
+            }
+        );
+    }
+
+    @Override
+    public void characterDead()
+    {
+        boolean playerDead = playerCon.getPlayer().getHealth() == 0;
+        if (playerDead)
+        {
+            JOptionPane.showMessageDialog(
+                null,
+                "You were slain"
+            );
+        }
+        else
+        {
+            JOptionPane.showMessageDialog(
+                null,
+                "Victory! +" + battleCon.getEnemy().getGold() + " GOLD"
+            );
+        }
+    }
 }

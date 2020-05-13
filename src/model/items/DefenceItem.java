@@ -48,7 +48,14 @@ public class DefenceItem extends Item
     {
         try
         {
-            character.setArmour(this);
+            if (character.isFighting())
+            {
+                throw new ItemInteractionException("You cannot equip armour while in battle");
+            }
+            else
+            {
+                character.setArmour(this);
+            }
         }
         catch (CharacterException e)
         {

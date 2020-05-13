@@ -9,7 +9,8 @@ public class CharacterInventory extends Inventory
     public static final int CAPACITY = 15;
     private DamageItem currWeapon;
     private DefenceItem currArmour;
-    private DamagePotion currPotion;
+    private DamagePotion currDamagePotion;
+    private HealingPotion currHealingPotion;
     private List<InventoryUpdateObservable> updateObservers;
 
     public CharacterInventory() 
@@ -18,7 +19,8 @@ public class CharacterInventory extends Inventory
         updateObservers = new ArrayList<InventoryUpdateObservable>();
         currWeapon = null;
         currArmour = null;
-        currPotion = null;
+        currDamagePotion = null;
+        currHealingPotion = null;
     }
 
     public DamageItem getWeapon()
@@ -29,6 +31,30 @@ public class CharacterInventory extends Inventory
     public DefenceItem getArmour()
     {
         return currArmour;
+    }
+
+    public int useDamagePotion(Dice dice)
+    {
+        int dmg = 0;
+        if (currDamagePotion != null)
+        {
+            dmg = currDamagePotion.getEffect(dice);
+            currDamagePotion = null;
+        }
+        
+        return dmg;
+    }
+
+    public int useHealingPotion(Dice dice)
+    {
+        int healPoints = 0;
+        if (currHealingPotion != null)
+        {
+            healPoints = currHealingPotion.getEffect(dice);
+            currHealingPotion = null;
+        }
+        
+        return healPoints;
     }
 
     public void setWeapon(DamageItem inWeapon) throws InventoryException
@@ -75,7 +101,7 @@ public class CharacterInventory extends Inventory
         this.notifyUpdateObservers();
     }
 
-    public void setPotion(DamagePotion inPotion) throws InventoryException
+    public void setDamagePotion(DamagePotion inPotion) throws InventoryException
     {
         boolean inInventory = false;
         for (Item ii : super.getItems())
@@ -93,7 +119,28 @@ public class CharacterInventory extends Inventory
             );
         }
 
-        this.currPotion = inPotion;
+        this.currDamagePotion = inPotion;
+    }
+
+    public void setHealingPotion(HealingPotion inPotion) throws InventoryException
+    {
+        boolean inInventory = false;
+        for (Item ii : super.getItems())
+        {
+            if (inPotion == ii)
+            {
+                inInventory = true;
+            }
+        }
+
+        if (!inInventory)
+        {
+            throw new InventoryException(
+                "Potion must be inside inventory to equip"
+            );
+        }
+
+        this.currHealingPotion = inPotion;
     }
 
     @Override

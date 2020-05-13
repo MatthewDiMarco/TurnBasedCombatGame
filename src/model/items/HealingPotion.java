@@ -24,8 +24,15 @@ public class HealingPotion extends Item
     {
         try
         {
-            character.getInventory().removeItem(this);
-            character.setHealth(character.getHealth() + this.getEffect(new Dice()));
+            if (!character.isFighting())
+            {
+                throw new ItemInteractionException("Potions must be used in battle");
+            }
+            else
+            {
+                character.getInventory().setHealingPotion(this);
+                character.getInventory().removeItem(this);
+            }
         }
         catch (InventoryException e)
         {

@@ -1,6 +1,6 @@
 package model.characters;
 
-public interface CharacterDieObservable
+public interface CharacterDeathObservable
 {
     public void characterDead();
 }

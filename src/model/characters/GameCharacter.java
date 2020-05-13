@@ -23,6 +23,7 @@ public class GameCharacter
     private int baseMaxDamage;
     private int baseMinDefence;
     private int baseMaxDefence;
+    private boolean fighting;
 
     protected CharacterInventory inventory;
     protected int currHealth;
@@ -31,7 +32,7 @@ public class GameCharacter
     // Observers
     private List<CharacterUpdateObservable> updateObservers;
     private List<CharacterActionObservable> actionObservers;
-    private List<CharacterDieObservable> dieObservers;
+    private List<CharacterDeathObservable> deathObservers;
 
     /**
      * Constructor.
@@ -51,7 +52,7 @@ public class GameCharacter
         // Init observer lists
         updateObservers = new ArrayList<CharacterUpdateObservable>();
         actionObservers = new ArrayList<CharacterActionObservable>();
-        dieObservers = new ArrayList<CharacterDieObservable>();
+        deathObservers = new ArrayList<CharacterDeathObservable>();
 
         // Validate ranges
         if (inName.isEmpty())
@@ -95,6 +96,7 @@ public class GameCharacter
         maxHealth = inMaxHealth;
         setHealth(maxHealth);
         inventory = inInventory;
+        fighting = false;
     }
 
     public String getName()
@@ -148,6 +150,11 @@ public class GameCharacter
         return min + " - " + max;
     }
 
+    public boolean isFighting()
+    {
+        return fighting;
+    }
+
     public void setWeapon(DamageItem inWeapon) throws CharacterException
     {
         try
@@ -167,18 +174,6 @@ public class GameCharacter
         {
             inventory.setArmour(inArmour);
             this.notifyUpdateObservers();
-        }
-        catch (InventoryException e)
-        {
-            throw new CharacterException(e.getMessage());
-        }
-    }
-
-    public void setPotion(DamagePotion inPotion) throws CharacterException
-    {
-        try
-        {
-            inventory.setPotion(inPotion);
         }
         catch (InventoryException e)
         {
@@ -210,6 +205,11 @@ public class GameCharacter
         }
     }
 
+    public void setFighting(boolean b)
+    {
+        fighting = b;
+    }
+
     /**
      * Health mutator. Used by defend() and attack() to update Character's 
      * Health.
@@ -220,7 +220,7 @@ public class GameCharacter
         if (inHealth <= 0)
         {
             currHealth = 0;
-            this.notifyDieObservers();
+            this.notifyDeathObservers();
         }
         else if (inHealth > maxHealth) // Stop health exceeding max
         {
@@ -244,15 +244,22 @@ public class GameCharacter
     {
         int dmg = 0;
 
-        // Calculate base damage
-        dmg += dice.roll(baseMinDamage, baseMaxDamage);
+        // Try use potion
+        if ((dmg = inventory.useDamagePotion(dice)) == 0)
+        {
+            // Calculate base damage
+            dmg += dice.roll(baseMinDamage, baseMaxDamage);
 
-        // If the character has a weapon, use it and append it's damage
-        dmg += inventory.getWeapon().getEffect(dice);
+            // If the character has a weapon, use it and append it's damage
+            if (inventory.getWeapon() != null)
+            {
+                dmg += inventory.getWeapon().getEffect(dice);
+            }
+        }
 
         // Update the battle
         this.notifyActionObservers(name + " ATTACKED for " + 
-                                   dmg + " points of DAMAGE");
+                                   dmg + " DAMAGE");
 
         return dmg; 
     }
@@ -271,20 +278,20 @@ public class GameCharacter
         def += dice.roll(baseMinDefence, baseMaxDefence);
 
         // If the character has armour, use it to absorb damage
-        def += inventory.getArmour().getEffect(dice);
-
-        // Update the battle
-        this.notifyActionObservers(name + " ABSORBED " + 
-                                   def + " points of DAMAGE");
+        if (inventory.getArmour() != null)
+        {
+            def += inventory.getArmour().getEffect(dice);
+        }
 
         // Take damage
         int oldHealth = this.getHealth();
         this.setHealth(currHealth - Math.max(0, dmg - def));
 
         // Update the battle
-        this.notifyActionObservers(name + " LOST " + 
-                                  (oldHealth - this.getHealth()) + 
-                                  " points of Health");
+        this.notifyActionObservers(name + " ABSORBED " + 
+                                   def + " DAMAGE, and LOST " + 
+                                   (oldHealth - this.getHealth()) + 
+                                   " HEALTH");
     }
 
     public void addUpdateObserver(CharacterUpdateObservable ob)
@@ -297,9 +304,9 @@ public class GameCharacter
         actionObservers.add(ob);
     }
 
-    public void addDieObserver(CharacterDieObservable ob)
+    public void addDeathObserver(CharacterDeathObservable ob)
     {
-        dieObservers.add(ob);
+        deathObservers.add(ob);
     }
 
     public void notifyUpdateObservers()
@@ -318,9 +325,9 @@ public class GameCharacter
         }
     }
 
-    public void notifyDieObservers()
+    public void notifyDeathObservers()
     {
-        for (CharacterDieObservable ob : dieObservers)
+        for (CharacterDeathObservable ob : deathObservers)
         {
             ob.characterDead();
         }

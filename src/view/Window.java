@@ -147,6 +147,8 @@ public class Window extends JFrame
                 public void actionPerformed(ActionEvent e)
                 {
                     win.setView("BATTLE");
+                    win.setButtons(false);
+                    inBattleView.newBattle();
                 }
             }
         );
@@ -170,4 +172,12 @@ public class Window extends JFrame
         CardLayout cl = (CardLayout)(views.getLayout());
         cl.show(views, name);
     }   
+
+    public void setButtons(Boolean b)
+    {
+        shopBtn.setEnabled(b);
+        changeNameBtn.setEnabled(b);
+        invBtn.setEnabled(b);
+        battleBtn.setEnabled(b);
+    }
 }

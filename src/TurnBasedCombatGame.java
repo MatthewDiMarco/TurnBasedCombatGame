@@ -90,7 +90,7 @@ public class TurnBasedCombatGame
         ShopController shopCon = new ShopController(new Inventory());
         shopCon.loadShop("resources/shopdata.csv");
         PlayerController playerCon = new PlayerController(controller);
-        BattleController battleCon = new BattleController(new Dice(), new EnemyFactory());
+        BattleController battleCon = new BattleController(new Dice(), new EnemyFactory(), player, controller);
 
         // Views
         ViewShop shopView = new ViewShop(shopCon, playerCon);
@@ -109,6 +109,7 @@ public class TurnBasedCombatGame
                 public void run()
                 {
                     Window game = new Window(controller);
+                    controller.setView(game);
                     game.start(shopView, equipView, nameView, battleView);
                     game.setVisible(true);
                 }

@@ -73,7 +73,9 @@ public class ShopController
         }
         catch (CharacterException e)
         {
-            throw new GameStateException(e.getMessage());
+            throw new GameStateException(
+                "You don't have enough gold to make this purchase"
+            );
         }
     }
 }

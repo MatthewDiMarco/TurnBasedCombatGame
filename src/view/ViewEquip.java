@@ -31,7 +31,7 @@ public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
 
         // Initialise Widgets
         invPane = new InventoryPanel(playerCon.getPlayer().getInventory());
-        selectBtn = new JButton("Equip");
+        selectBtn = new JButton("Select");
         currWeaponLbl = new JLabel("Equiped Weapon: ");
         currArmourLbl = new JLabel("Equiped Armour: ");
 

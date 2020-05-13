@@ -25,10 +25,17 @@ public class DamagePotion extends Item
     {
         try
         {
-            character.setPotion(this);
-            character.getInventory().removeItem(this);
+            if (!character.isFighting())
+            {
+                throw new ItemInteractionException("Potions must be used in battle");
+            }
+            else 
+            {
+                character.getInventory().setDamagePotion(this);
+                character.getInventory().removeItem(this);
+            }
         }
-        catch (CharacterException | InventoryException e)
+        catch (InventoryException e)
         {
             throw new ItemInteractionException(e.getMessage());
         }
