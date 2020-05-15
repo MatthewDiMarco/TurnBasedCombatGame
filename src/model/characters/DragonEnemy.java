@@ -37,16 +37,21 @@ public class DragonEnemy extends EnemyCharacter
     @Override
     protected int modifier(int damage, Dice dice)
     {
+        final int HEAL = 10;
         int result = dice.roll(1, 100);
 
         // 25% chance of (only) double damage
-        if (result < 25)
+        if (result < 10) // 10% chance of (only) self-heal
         {
-            damage *= 2;
+            super.notifyActionObservers(SPECIES_NAME + 
+                " USED ABILITY (+" + HEAL + " HEALTH)");
+            this.setHealth(currHealth + HEAL);
         }
-        else if (result < 10) // 10% chance of (only) self-heal
+        else if (result < 25)
         {
-            this.setHealth(currHealth + 10);
+            super.notifyActionObservers(SPECIES_NAME + 
+                " USED ABILITY (2 x " + damage + " DAMAGE)");
+            damage *= 2;
         }
 
         return damage;

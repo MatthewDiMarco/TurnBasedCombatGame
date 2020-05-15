@@ -94,7 +94,17 @@ public class ViewBattle extends ViewPanel implements CharacterActionObservable,
             {
                 public void actionPerformed(ActionEvent e)
                 {
-                    battleCon.endTurn();
+                    try
+                    {
+                        battleCon.endTurn(-1);
+                    }
+                    catch (GameStateException e2)
+                    {
+                        // Controller will let us know of problems
+                        JOptionPane.showMessageDialog(
+                            null, e2.getMessage()
+                        );
+                    }
                 }
             }
         );
@@ -110,8 +120,7 @@ public class ViewBattle extends ViewPanel implements CharacterActionObservable,
                     {
                         try
                         {
-                            playerCon.interact(itemIndex);
-                            battleCon.endTurn();
+                            battleCon.endTurn(itemIndex);
                             view.setPane("MSG");
                         }
                         catch (GameStateException e2)

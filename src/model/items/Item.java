@@ -95,5 +95,5 @@ public abstract class Item
         return name;
     }
 
-    abstract public void interactWith(GameCharacter character) throws ItemInteractionException;
+    abstract public int interactWith(GameCharacter character) throws ItemInteractionException;
 }

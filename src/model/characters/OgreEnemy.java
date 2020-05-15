@@ -40,6 +40,8 @@ public class OgreEnemy extends EnemyCharacter
         // 20% to attack twice in a row
         if (dice.roll(1, 100) < 20)
         {
+            super.notifyActionObservers(SPECIES_NAME + 
+                " USED ABILITY (x2 attack)");
             damage += super.attack(dice);
         }
 

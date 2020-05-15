@@ -40,6 +40,8 @@ public class SlimeEnemy extends EnemyCharacter
         // 20% chance attack will have no damage
         if (dice.roll(1, 100) < 20)
         {
+            super.notifyActionObservers(SPECIES_NAME +  
+                " USED ABILITY (-" + damage + " DAMAGE)");
             damage = 0;
         }
 

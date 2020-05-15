@@ -19,7 +19,7 @@ public class TurnBasedCombatGame
     {
         // Initialise Player
         CharacterInventory inventory = new CharacterInventory();
-
+        
         try
         {
 
@@ -86,11 +86,22 @@ public class TurnBasedCombatGame
             System.out.println(e.getMessage());
         }
 
+        // Initialise Controllers
+        Factory factory = new Factory();
+        Inventory shop = new Inventory();
         MainController controller = new MainController(player);
-        ShopController shopCon = new ShopController(new Inventory());
-        shopCon.loadShop("resources/shopdata.csv");
         PlayerController playerCon = new PlayerController(controller);
-        BattleController battleCon = new BattleController(new Dice(), new EnemyFactory(), player, controller);
+        BattleController battleCon = new BattleController(new Dice(), factory, player, controller);
+
+        ShopController shopCon = new ShopController(factory, shop);
+        try
+        {
+            shopCon.loadShop("resources/shopdata.csv"); 
+        }
+        catch (ShopLoaderException e)
+        {
+            System.out.println("Error loading shop: " + e.getMessage());
+        }
 
         // Views
         ViewShop shopView = new ViewShop(shopCon, playerCon);

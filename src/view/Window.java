@@ -11,7 +11,7 @@ public class Window extends JFrame
 {   
     // Constants
     public static final int PADDING = 5;
-    public static final int WIDTH = 768;
+    public static final int WIDTH = 960;
     public static final int HEIGHT = 480;
 
     // Panels

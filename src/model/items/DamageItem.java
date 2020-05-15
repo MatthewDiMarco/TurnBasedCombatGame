@@ -38,7 +38,7 @@ public abstract class DamageItem extends Item
     }
 
     @Override
-    public void interactWith(GameCharacter character) throws ItemInteractionException
+    public int interactWith(GameCharacter character) throws ItemInteractionException
     {
         try
         {
@@ -55,5 +55,7 @@ public abstract class DamageItem extends Item
         {
             throw new ItemInteractionException(e.getMessage());
         }
+
+        return 0;
     }
 }

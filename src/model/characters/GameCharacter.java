@@ -94,7 +94,7 @@ public class GameCharacter
         baseMinDefence = inMinD;
         baseMaxDefence = inMaxD;
         maxHealth = inMaxHealth;
-        setHealth(maxHealth);
+        currHealth = maxHealth;
         inventory = inInventory;
         fighting = false;
     }
@@ -244,22 +244,17 @@ public class GameCharacter
     {
         int dmg = 0;
 
-        // Try use potion
-        if ((dmg = inventory.useDamagePotion(dice)) == 0)
-        {
-            // Calculate base damage
-            dmg += dice.roll(baseMinDamage, baseMaxDamage);
+        // Calculate base damage
+        dmg += dice.roll(baseMinDamage, baseMaxDamage);
 
-            // If the character has a weapon, use it and append it's damage
-            if (inventory.getWeapon() != null)
-            {
-                dmg += inventory.getWeapon().getEffect(dice);
-            }
+        // If the character has a weapon, use it and append it's damage
+        if (inventory.getWeapon() != null)
+        {
+            dmg += inventory.getWeapon().getEffect(dice);
         }
 
         // Update the battle
-        this.notifyActionObservers(name + " ATTACKED for " + 
-                                   dmg + " DAMAGE");
+        this.notifyActionObservers(name + " ATTACKED (+" + dmg + " DAMAGE)" );
 
         return dmg; 
     }
@@ -289,9 +284,8 @@ public class GameCharacter
 
         // Update the battle
         this.notifyActionObservers(name + " ABSORBED " + 
-                                   def + " DAMAGE, and LOST " + 
-                                   (oldHealth - this.getHealth()) + 
-                                   " HEALTH");
+            def + " DAMAGE (-" + 
+            (oldHealth - this.getHealth()) + " HEALTH)");
     }
 
     public void addUpdateObserver(CharacterUpdateObservable ob)

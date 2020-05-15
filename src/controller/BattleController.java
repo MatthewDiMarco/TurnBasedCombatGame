@@ -6,12 +6,12 @@ public class BattleController
 {
     private GameCharacter player;
     private EnemyCharacter opponent;
-    private EnemyFactory spawner;
+    private Factory spawner;
     private MainController controller;
     private Dice dice;
 
     public BattleController(Dice inDice, 
-                            EnemyFactory inFactory, 
+                            Factory inFactory, 
                             GameCharacter inPlayer,
                             MainController inController)
     {
@@ -32,27 +32,35 @@ public class BattleController
         return opponent;
     }
 
-    public void endTurn()
+    public void endTurn(int index) throws GameStateException
     {
-        int effect;
+        int dmg = 0;
 
         // Player's move
-        effect = player.getInventory().useHealingPotion(dice);
-        if (effect > 0)
+        if (index <= -1)
         {
-            player.setHealth(player.getHealth() + effect);
-            player.notifyActionObservers(player.getName() + " HEALED " +
-                                         effect + " points of Health");
+            dmg += player.attack(dice);
         }
         else
         {
-            effect = player.attack(dice);
-            opponent.defend(effect, dice);
+            try
+            {
+                dmg += player.getInventory().getItem(index).interactWith(player);
+            }
+            catch (ItemInteractionException e)
+            {
+                throw new GameStateException(e.getMessage());
+            }
+        }
+
+        if (dmg > 0)
+        {
+            opponent.defend(dmg, dice);   
         }
 
         // Enemy's move
-        effect = opponent.attack(dice);
-        player.defend(effect, dice);
+        dmg = opponent.attack(dice);
+        player.defend(dmg, dice);
 
         // Check for deceased
         if (player.getHealth() == 0)

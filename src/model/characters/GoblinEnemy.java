@@ -37,10 +37,14 @@ public class GoblinEnemy extends EnemyCharacter
     @Override
     protected int modifier(int damage, Dice dice)
     {
+        final int ADD = 3;
+
         // 50% for an extra +3 damage
         if (dice.roll(1, 100) < 50)
         {
-            damage += 3;
+            super.notifyActionObservers(SPECIES_NAME + 
+                " USED ABILITY (+" + ADD + " DAMAGE)");
+            damage += ADD;
         }
 
         return damage;

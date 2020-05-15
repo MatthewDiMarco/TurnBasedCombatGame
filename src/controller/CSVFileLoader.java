@@ -8,7 +8,7 @@ public class CSVFileLoader implements ShopLoader
      * Append items in the csv file to an existing shop.
      */
     @Override
-    public Inventory load(Inventory shop, String fileName)
+    public Inventory load(Inventory shop, String fileName) throws ShopLoaderException
     {
         FileInputStream fileStrm = null;
         InputStreamReader rdr;
@@ -26,7 +26,7 @@ public class CSVFileLoader implements ShopLoader
             line = bufRdr.readLine();
             if(line == null)
             {
-                throw new IOException("'" + fileName + "' is empty");
+                throw new ShopLoaderException("'" + fileName + "' is empty");
             }
 
             //Start reading
@@ -70,8 +70,10 @@ public class CSVFileLoader implements ShopLoader
                 catch (IllegalArgumentException | InventoryException e)
                 {
                     valid = false;
-                    System.out.println("Error at line " + lineNum +
-                                       ": " + e.getMessage());
+                    throw new ShopLoaderException(
+                        "Problem at line " + lineNum +
+                        ": " + e.getMessage()
+                    );
                 }
 
                 // Next Item
@@ -87,8 +89,10 @@ public class CSVFileLoader implements ShopLoader
         catch (IOException e)
         {
             shop = null;
-            System.out.println("There was an error processing '" + fileName + 
-                               "'\nFailed to load shop");
+            throw new ShopLoaderException(
+                "There was an error processing '" + fileName + "'\n" +
+                "Failed to load shop"
+            );
         }
         finally
         {
@@ -99,7 +103,7 @@ public class CSVFileLoader implements ShopLoader
                 {
                     fileStrm.close();
                 }
-                catch(IOException ex2) {} //Can't do much
+                catch(IOException ex2) {}
             }
         }
 

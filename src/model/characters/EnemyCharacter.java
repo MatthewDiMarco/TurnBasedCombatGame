@@ -36,7 +36,7 @@ public abstract class EnemyCharacter extends GameCharacter
     public int attack(Dice dice)
     {
         int dmg = super.attack(dice);
-        modifier(dmg, dice); // Unique special abilities
+        dmg = modifier(dmg, dice); // Unique special abilities
         return dmg;
     }
 

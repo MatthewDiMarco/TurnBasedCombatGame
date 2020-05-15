@@ -93,7 +93,14 @@ public class ViewShop extends ViewPanel
                         // Try buying
                         try
                         {
-                            shopCon.buyItem(playerCon.getPlayer(), itemIndex);
+                            if (enchantmentMode)
+                            {
+                                shopCon.buyEnchantment(playerCon.getPlayer(), itemIndex);
+                            }
+                            else
+                            {
+                                shopCon.buyItem(playerCon.getPlayer(), itemIndex);
+                            }
                         }
                         catch (GameStateException e2)
                         {

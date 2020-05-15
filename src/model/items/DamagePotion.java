@@ -1,5 +1,4 @@
 package model.items;
-import model.characters.CharacterException;
 import model.characters.GameCharacter;
 
 /**
@@ -21,8 +20,9 @@ public class DamagePotion extends Item
     }
 
     @Override
-    public void interactWith(GameCharacter character) throws ItemInteractionException
+    public int interactWith(GameCharacter character) throws ItemInteractionException
     {
+        int dmg;
         try
         {
             if (!character.isFighting())
@@ -31,13 +31,18 @@ public class DamagePotion extends Item
             }
             else 
             {
-                character.getInventory().setDamagePotion(this);
+                dmg = this.getEffect(new Dice()); //temp - remove new!
                 character.getInventory().removeItem(this);
+                character.notifyActionObservers(character.getName() + " USED " +
+                                                this.name + " (+" + dmg + 
+                                                " DAMAGE)");
             }
         }
         catch (InventoryException e)
         {
             throw new ItemInteractionException(e.getMessage());
         }
+
+        return dmg;
     }
 }

@@ -20,7 +20,7 @@ public class HealingPotion extends Item
     }
 
     @Override
-    public void interactWith(GameCharacter character) throws ItemInteractionException
+    public int interactWith(GameCharacter character) throws ItemInteractionException
     {
         try
         {
@@ -30,13 +30,20 @@ public class HealingPotion extends Item
             }
             else
             {
-                character.getInventory().setHealingPotion(this);
                 character.getInventory().removeItem(this);
+
+                int healing = this.getEffect(new Dice());
+                character.setHealth(character.getHealth() + healing);
+                character.notifyActionObservers(character.getName() + " USED " +
+                                                this.name + " (+" + healing + 
+                                                " HEALTH)");
             }
         }
         catch (InventoryException e)
         {
             throw new ItemInteractionException(e.getMessage());
         }
+
+        return 0;
     }
 }
