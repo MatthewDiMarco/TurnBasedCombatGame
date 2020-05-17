@@ -59,15 +59,18 @@ public class BattleController
         }
 
         // Enemy's move
-        dmg = opponent.attack(dice);
-        player.defend(dmg, dice);
-
-        // Check for deceased
-        if (player.getHealth() == 0)
+        if (opponent.getHealth() != 0)
         {
-            controller.gameOver();
+            dmg = opponent.attack(dice);
+            player.defend(dmg, dice);
+
+            // Check for deceased
+            if (player.getHealth() == 0)
+            {
+                controller.gameOver();
+            }
         }
-        else if (opponent.getHealth() == 0)
+        else
         {
             controller.playerVictory();
             player.setFighting(false);
@@ -77,10 +80,10 @@ public class BattleController
                 player.setGold(player.getGold() + opponent.getGold());
             }
             catch (CharacterException e) {}
-
-            // Make harder for next battle
-            spawner.mutateProbabilities();
         }
+
+        // Make harder for next battle
+        spawner.mutateProbabilities();
     }
 
     public void newBattle()

@@ -93,13 +93,19 @@ public class CharacterInventory extends Inventory
     public void removeItem(Item inItem) throws InventoryException
     {
         List<Item> items = super.getItems();
-        for (int ii = 0; ii < items.size(); ii++)
+
+        boolean found = false;
+        int ii = 0;
+        while (!found && ii < items.size())
         {
             if (items.get(ii) == inItem)
             {
+                found = true;
                 this.removeItem(ii);
                 this.notifyUpdateObservers();
             }
+
+            ii++;
         }
     }
 

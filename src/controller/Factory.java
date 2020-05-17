@@ -1,6 +1,7 @@
 package controller;
 import model.characters.*;
 import model.items.*;
+import java.util.*;
 
 public class Factory
 {
@@ -63,6 +64,75 @@ public class Factory
         }
 
         return enchantedWeapon;
+    }
+
+    public GameCharacter makePlayer(Inventory shop)
+    {
+        final int HEALTH = 30;
+        final int GOLD = 100;
+
+        CharacterInventory inventory = new CharacterInventory();
+
+        // Calc cheapest shop weapon & armour
+        List<Item> items = shop.getItems();
+        DamageItem cWeapon = null;
+        DefenceItem cArmour = null;
+
+        int ii = 0;
+        while ((cWeapon == null || cArmour == null) && ii < items.size())
+        {
+            try
+                {
+                    cWeapon = (DamageItem)items.get(ii);
+                }
+                catch (ClassCastException e) {}
+
+                try
+                {
+                    cArmour = (DefenceItem)items.get(ii);
+                }
+                catch (ClassCastException e) {}
+
+            ii++;
+        }
+
+        for (Item i : items)
+        {
+            if (i.getCost() < cWeapon.getCost() || 
+                i.getCost() < cArmour.getCost())
+            {
+                try
+                {
+                    cWeapon = (DamageItem)i;
+                }
+                catch (ClassCastException e) {}
+
+                try
+                {
+                    cArmour = (DefenceItem)i;
+                }
+                catch (ClassCastException e) {}
+            } 
+        }
+
+        // Equip
+        try
+        {
+            inventory.addItem(cWeapon);
+            inventory.addItem(cArmour);
+            inventory.setWeapon(cWeapon);
+            inventory.setArmour(cArmour);
+        }
+        catch (InventoryException e) {}
+
+        // Create the player
+        GameCharacter player = new GameCharacter(
+            "No Name", GOLD, HEALTH, 
+            0, 0, 0, 0, 
+            inventory
+        );
+
+        return player; 
     }
 
     public ShopLoader makeShopLoader(String source)
