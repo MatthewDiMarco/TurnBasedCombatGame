@@ -18,7 +18,7 @@ public class Window extends JFrame
     private JPanel views;
     private CharacterStatsPanel playerStatsPane;
     private InventoryPanel playerInvPane;
-    private JPanel masterPane;
+    private ViewPanel masterPane;
 
     // Buttons
     private JButton shopBtn;
@@ -48,6 +48,11 @@ public class Window extends JFrame
 
         playerStatsPane = new CharacterStatsPanel(controller.getPlayer());
         playerInvPane = new InventoryPanel(controller.getPlayer().getInventory());
+        playerInvPane.setBorder(
+            BorderFactory.createEmptyBorder(
+                PADDING, PADDING, PADDING, PADDING
+            )
+        );
 
         shopBtn = new JButton("Shop");
         changeNameBtn = new JButton("Change Name");
@@ -68,16 +73,12 @@ public class Window extends JFrame
                       ViewNamePrompt inNameView,
                       ViewBattle inBattleView)
     {
-        masterPane = new JPanel();
-        masterPane.setLayout(new GridLayout(1, 2));
-        masterPane.setBorder(
-            BorderFactory.createEmptyBorder(PADDING, PADDING, PADDING, PADDING)
-        );
+        masterPane = new ViewPanel(new GridLayout(1, 2), "", PADDING);
 
         // Side pane
         JPanel playerPane = new JPanel(new BorderLayout());
-        JPanel sidePane = new JPanel(new BorderLayout());
-        JPanel buttonsPane = new JPanel(new GridLayout(5, 1)); // Menu options
+        ViewPanel sidePane = new ViewPanel(new BorderLayout(), "", PADDING);
+        ViewPanel buttonsPane = new ViewPanel(new GridLayout(5, 1), "", PADDING); // Menu options
 
         buttonsPane.add(shopBtn);
         buttonsPane.add(changeNameBtn);

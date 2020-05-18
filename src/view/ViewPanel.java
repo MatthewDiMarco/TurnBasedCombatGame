@@ -1,15 +1,15 @@
 package view;
 import javax.swing.*;
-import java.awt.*;
+import java.awt.LayoutManager;
 
-public abstract class ViewPanel extends JPanel
+public class ViewPanel extends JPanel
 {
     public static final int PADDING = Window.PADDING;
 
-    public ViewPanel(String inTitle, int borderPad)
+    public ViewPanel(LayoutManager layout, String inTitle, int borderPad)
     {
-        super();
-        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+        super(layout);
+        //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         if (inTitle.isEmpty())
         {
             this.setBorder(
@@ -29,6 +29,4 @@ public abstract class ViewPanel extends JPanel
             );
         }
     }
-
-    public abstract void init();
 }

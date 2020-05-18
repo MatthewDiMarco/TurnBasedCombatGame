@@ -6,6 +6,7 @@ import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.awt.GridLayout;
+import java.awt.FlowLayout;
 
 public class ViewNamePrompt extends ViewPanel
 {
@@ -24,7 +25,8 @@ public class ViewNamePrompt extends ViewPanel
      */
     public ViewNamePrompt(PlayerController inPlayerCon)
     {
-        super("NAME CHARACTER", Window.PADDING);
+        super(new FlowLayout(), "NAME CHARACTER", Window.PADDING);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         playerCon = inPlayerCon;
 
         // Initialise Widgets
@@ -32,7 +34,6 @@ public class ViewNamePrompt extends ViewPanel
         applyBtn = new JButton("Apply");
     }
 
-    @Override
     public void init()
     {
         JPanel masterPane = new JPanel(new GridLayout(20, 1));

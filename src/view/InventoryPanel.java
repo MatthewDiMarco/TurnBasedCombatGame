@@ -3,6 +3,7 @@ import model.items.InventoryUpdateObservable;
 import model.items.CharacterInventory;
 import model.items.Item;
 import javax.swing.*;
+import java.awt.FlowLayout;
 import java.util.*;
 
 /**
@@ -19,7 +20,7 @@ public class InventoryPanel extends ViewPanel implements InventoryUpdateObservab
      */
     public InventoryPanel(CharacterInventory inv) 
     {
-        super("", 0);
+        super(new FlowLayout(), "", 0);
         this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         items = new JList<String>();
@@ -49,11 +50,5 @@ public class InventoryPanel extends ViewPanel implements InventoryUpdateObservab
         }
 
         items.setListData(inv);
-    }
-
-    @Override
-    public void init()
-    {
-        //todo
     }
 }

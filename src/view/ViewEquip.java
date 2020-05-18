@@ -6,6 +6,7 @@ import model.items.GameStateException;
 import javax.swing.*;
 import java.awt.Dimension;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.*;
 
@@ -26,7 +27,8 @@ public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
      */
     public ViewEquip(PlayerController inPlayerCon)
     {
-        super("EQUIP WEAPONS AND ARMOUR", Window.PADDING);
+        super(new FlowLayout(), "EQUIP WEAPONS AND ARMOUR", PADDING);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         playerCon = inPlayerCon;
 
         // Initialise Widgets
@@ -38,7 +40,6 @@ public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
         inPlayerCon.getPlayer().getInventory().addUpdateObserver(this);
     }
 
-    @Override
     public void init()
     {
         JPanel masterPane = new JPanel(new BorderLayout());

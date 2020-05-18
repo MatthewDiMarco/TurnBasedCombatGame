@@ -6,6 +6,7 @@ import model.items.GameStateException;
 import javax.swing.*;
 import java.awt.BorderLayout;
 import java.awt.CardLayout;
+import java.awt.FlowLayout;
 import java.awt.event.*;
 import java.util.*;
 
@@ -30,7 +31,8 @@ public class ViewBattle extends ViewPanel implements CharacterActionObservable,
     public ViewBattle(BattleController inBattleCon, 
                       PlayerController inPlayerCon)
     {
-        super("", PADDING);
+        super(new FlowLayout(), "", PADDING);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         battleCon = inBattleCon;
         playerCon = inPlayerCon;
 
@@ -50,13 +52,12 @@ public class ViewBattle extends ViewPanel implements CharacterActionObservable,
         playerCon.getPlayer().addDeathObserver(this);
     }
 
-    @Override
     public void init()
     {
         this.setLayout(new BorderLayout());
 
         // Message feed
-        JPanel messagePane = new JPanel(new BorderLayout());
+        JPanel messagePane = new ViewPanel(new BorderLayout(), "", PADDING);
         JToolBar msgToolbar = new JToolBar();
         msgToolbar.setFloatable(false);
         msgToolbar.add(attackBtn);
@@ -66,7 +67,7 @@ public class ViewBattle extends ViewPanel implements CharacterActionObservable,
         messagePane.add(feed, BorderLayout.CENTER);
 
         // Inventory selection
-        JPanel inventoryPane = new JPanel(new BorderLayout());
+        JPanel inventoryPane = new ViewPanel(new BorderLayout(), "", PADDING);
         JToolBar invToolbar = new JToolBar();
         invToolbar.setFloatable(false);
         invToolbar.add(selectBtn);

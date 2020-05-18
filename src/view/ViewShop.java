@@ -4,6 +4,7 @@ import model.items.Item;
 import controller.*;
 import javax.swing.*;
 import java.awt.BorderLayout;
+import java.awt.FlowLayout;
 import java.awt.Dimension;
 import java.awt.event.*;
 import java.util.*;
@@ -27,7 +28,8 @@ public class ViewShop extends ViewPanel
     public ViewShop(ShopController inShopController, 
                     PlayerController inPlayerController)
     {
-        super("SHOP", Window.PADDING);
+        super(new FlowLayout(), "SHOP", Window.PADDING);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         shopCon = inShopController;
         playerCon = inPlayerController;
         enchantmentMode = false;
@@ -43,7 +45,6 @@ public class ViewShop extends ViewPanel
         enchantmentsBtn = new JButton("Enchantments");
     }
 
-    @Override
     public void init()
     {
         JPanel shopPane = new JPanel(new BorderLayout());

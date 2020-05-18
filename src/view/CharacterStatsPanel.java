@@ -1,11 +1,10 @@
 package view;
 import model.characters.CharacterUpdateObservable;
 import model.characters.GameCharacter;
-import model.items.CharacterInventory;
-import model.items.InventoryUpdateObservable;
-
 import javax.swing.*;
-import java.awt.*;
+import java.awt.FlowLayout;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
 
 /**
  * Draws a game character's stats.
@@ -25,7 +24,8 @@ public class CharacterStatsPanel extends ViewPanel implements CharacterUpdateObs
      */
     public CharacterStatsPanel(GameCharacter character) 
     {
-        super("STATS", 0);
+        super(new FlowLayout(), "STATS", PADDING);
+        this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
 
         // Labels
         JPanel panel1 = new JPanel(new BorderLayout());
@@ -74,10 +74,4 @@ public class CharacterStatsPanel extends ViewPanel implements CharacterUpdateObs
     {
         showCharacterStats(character);
     }  
-
-    @Override
-    public void init()
-    {
-        //todo
-    }
 }
