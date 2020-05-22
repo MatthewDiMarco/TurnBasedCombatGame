@@ -7,6 +7,14 @@ import java.awt.CardLayout;
 import java.awt.BorderLayout;
 import java.awt.event.*;
 
+/**
+ * The main game window.
+ * Contains the JPanel 'views' as a CardLayout. This panel contains a series of
+ * other panels to be displayed on the right-hand side of the screen. When the
+ * user selects a menu option, the right-hand screen is swapped out with that
+ * option. The left-hand side of the screen will persist in showing the player's
+ * stats, inventory and the main menu, at all times.
+ */
 public class Window extends JFrame
 {   
     // Constants

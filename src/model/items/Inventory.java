@@ -2,7 +2,7 @@ package model.items;
 import java.util.*;
 
 /**
- * [description]
+ * For storing and accessing a list of items
  */
 public class Inventory
 {

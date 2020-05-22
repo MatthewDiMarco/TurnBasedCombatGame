@@ -1,9 +1,6 @@
 package model.items;
 import model.characters.GameCharacter;
 
-/**
- * Healing
- */
 public class HealingPotion extends Item
 {
     /**
@@ -19,6 +16,10 @@ public class HealingPotion extends Item
         super(inName, inCost, inMinEff, inMaxEff);
     }
 
+    /**
+     * Heals the character and removes the potion from their inventory
+     * @param character
+     */
     @Override
     public int interactWith(GameCharacter character) throws ItemInteractionException
     {

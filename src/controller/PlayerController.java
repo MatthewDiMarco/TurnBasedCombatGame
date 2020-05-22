@@ -3,6 +3,9 @@ import model.characters.CharacterException;
 import model.characters.GameCharacter;
 import model.items.*;
 
+/**
+ * Responsible for manipulating the player model
+ */
 public class PlayerController 
 {
     MainController controller;

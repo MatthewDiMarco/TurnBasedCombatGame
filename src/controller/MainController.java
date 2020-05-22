@@ -2,6 +2,9 @@ package controller;
 import model.characters.GameCharacter;
 import view.Window;
 
+/**
+ * This class controls the views and main game window.
+ */
 public class MainController 
 {
     GameCharacter player;

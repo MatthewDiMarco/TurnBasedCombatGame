@@ -5,8 +5,7 @@ import model.items.*;
 import javax.swing.SwingUtilities;
 
 /**
- * [description] ... [credit]
- * Sources: build.xml and initial swing code from prac x etc.
+ * Turn Based Combat Game (Object Oriented Software Engineering Assignment)
  * @author Matthew Di Marco
  */
 public class TurnBasedCombatGame

@@ -9,6 +9,9 @@ import java.awt.Dimension;
 import java.awt.event.*;
 import java.util.*;
 
+/**
+ * This view display shop items, enchantments and the player's inventory.
+ */
 public class ViewShop extends ViewPanel
 {
     private boolean enchantmentMode;

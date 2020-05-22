@@ -1,5 +1,4 @@
 package model.items;
-import java.util.*;
 
 /**
  * Weapons are used to deal damage to an opponent.

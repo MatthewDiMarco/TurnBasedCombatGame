@@ -2,6 +2,10 @@ package controller;
 import model.characters.*;
 import model.items.*;
 
+/**
+ * This class is responsible for facilitating a battle between the player and
+ * an enemy.
+ */
 public class BattleController 
 {
     private GameCharacter player;
@@ -32,6 +36,12 @@ public class BattleController
         return opponent;
     }
 
+    /**
+     * Called by view to end the player's turn and make the characters attack
+     * and defend, subtracting their health as necessary.
+     * @param index The item to try use in the player's inventory. -1 means
+     *              "no item", resulting in the player using their weapon.
+     */
     public void endTurn(int index) throws GameStateException
     {
         int dmg = 0;
@@ -80,10 +90,10 @@ public class BattleController
                 player.setGold(player.getGold() + opponent.getGold());
             }
             catch (CharacterException e) {}
-        }
 
-        // Make harder for next battle
-        spawner.mutateProbabilities();
+            // Make harder for next battle
+            spawner.mutateProbabilities();
+        }
     }
 
     public void newBattle()

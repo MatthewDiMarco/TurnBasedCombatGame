@@ -7,17 +7,13 @@ import java.awt.FlowLayout;
 import java.util.*;
 
 /**
- * Draws a game character's stats.
+ * Draws a game character's inventory items.
  */
 public class InventoryPanel extends ViewPanel implements InventoryUpdateObservable
 {
     private JList<String> items;
     private JScrollPane invPane;
 
-    /**
-     * Constructor.
-     * @param inv The Inventory to display
-     */
     public InventoryPanel(CharacterInventory inv) 
     {
         super(new FlowLayout(), "", 0);

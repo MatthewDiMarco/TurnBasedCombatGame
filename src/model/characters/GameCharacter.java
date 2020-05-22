@@ -1,7 +1,6 @@
 package model.characters;
 import model.items.CharacterInventory;
 import model.items.DamageItem;
-import model.items.DamagePotion;
 import model.items.DefenceItem;
 import model.items.Dice;
 import model.items.InventoryException;

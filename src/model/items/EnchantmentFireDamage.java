@@ -1,5 +1,8 @@
 package model.items;
 
+/**
+ * Adds a range of damage to a weapon.
+ */
 public class EnchantmentFireDamage extends Enchantment
 {
     public EnchantmentFireDamage(DamageItem inNext, 

@@ -1,7 +1,7 @@
 package model.items;
 
 /**
- * When inventory capacity is reached.
+ * For Inventory / CharacterInventory related exceptions.
  */
 public class InventoryException extends GameStateException
 {

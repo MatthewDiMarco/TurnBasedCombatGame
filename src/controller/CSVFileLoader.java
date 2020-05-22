@@ -2,10 +2,13 @@ package controller;
 import model.items.*;
 import java.io.*;
 
+/**
+ * Stategy for loading shop data from a simple CSV file.
+ */
 public class CSVFileLoader implements ShopLoader
 {
     /**
-     * Append items in the csv file to an existing shop.
+     * Append items in the csv file to the imported shop.
      */
     @Override
     public Inventory load(Inventory shop, String fileName) throws ShopLoaderException

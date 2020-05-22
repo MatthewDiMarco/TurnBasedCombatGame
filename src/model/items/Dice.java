@@ -1,6 +1,9 @@
 package model.items;
 import java.util.Random;
 
+/**
+ * Used for generating random numbers.
+ */
 public class Dice 
 {
     private Random generator;

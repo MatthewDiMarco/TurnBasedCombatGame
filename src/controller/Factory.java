@@ -3,6 +3,10 @@ import model.characters.*;
 import model.items.*;
 import java.util.*;
 
+/**
+ * This class is responsible for constructing game entities (e.g. Characters, 
+ * Enchantments, etc).
+ */
 public class Factory
 {
     // Enemy spawn probabilities
@@ -10,9 +14,6 @@ public class Factory
     private double ogreProb;
     private double dragonProb;
 
-    /**
-     * Constructor.
-     */
     public Factory()
     {
         goblinProb  = 0.30;
@@ -21,6 +22,12 @@ public class Factory
         // remainder = slime prob
     }
 
+    /**
+     * This function adds enchantments to weapons.
+     * @param weapon The weapon to enchant
+     * @param type The enchantments descirption: "gold:name:effect", e.g. "5:DAMAGE:+2"
+     * @return The enchanted weapon
+     */
     public DamageItem addEnchantment(DamageItem weapon, String type)
     {
         DamageItem enchantedWeapon = null;
@@ -66,6 +73,12 @@ public class Factory
         return enchantedWeapon;
     }
 
+    /**
+     * Constructs the player, starting them off with the cheapest weapon and
+     * armour from the shop.
+     * @param shop The shop
+     * @return The player
+     */
     public GameCharacter makePlayer(Inventory shop)
     {
         final int HEALTH = 30;
@@ -135,6 +148,11 @@ public class Factory
         return player; 
     }
 
+    /**
+     * Construct a shop loader appropriate for the provided source.
+     * @param source Data location (e.g. "*.csv" or "www.*"" etc)
+     * @return The ShopLoader
+     */
     public ShopLoader makeShopLoader(String source)
     {
         ShopLoader loader = null;
@@ -161,6 +179,12 @@ public class Factory
         return loader;
     }
 
+    /**
+     * Constructs an enemy object, the subclass of which is determined by the
+     * random probabilities.
+     * @param dice Used for random number generation
+     * @return The enemy
+     */
     public EnemyCharacter makeEnemy(Dice dice)
     {
         EnemyCharacter enemy = null;
@@ -188,21 +212,29 @@ public class Factory
         return enemy;
     }
 
+    /**
+     * Alter the probabilities like so: any non-dragons are decreased by 5% and
+     * the dragon is increased accordingly (15%). Non-dragons may not drop below
+     * 5%, and the dragon's max is 85%
+     */
     public void mutateProbabilities()
     {
-        if (dragonProb < 1)
+        if (dragonProb < 0.85)
         {
-            dragonProb += 0.15;
-
-            if (ogreProb != 0)
+            double sum = 0.05;
+            if ((ogreProb - 0.05) > 0.05)
             {
                 ogreProb -= 0.05;
+                sum += 0.05;
             }
 
-            if (goblinProb != 0)
+            if ((goblinProb - 0.05) > 0.05)
             {
-                ogreProb -= 0.05;
+                goblinProb -= 0.05;
+                sum += 0.05;
             }
+
+            dragonProb += sum;
         }
     }
 }

@@ -18,10 +18,6 @@ public class CharacterStatsPanel extends ViewPanel implements CharacterUpdateObs
     private JLabel characterAttack;
     private JLabel characterDefence;
 
-    /**
-     * Constructor.
-     * @param stats
-     */
     public CharacterStatsPanel(GameCharacter character) 
     {
         super(new FlowLayout(), "STATS", PADDING);

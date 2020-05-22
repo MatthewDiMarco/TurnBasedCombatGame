@@ -19,6 +19,11 @@ public class DamagePotion extends Item
         super(inName, inCost, inMinEff, inMaxEff);
     }
 
+    /**
+     * Activates the potion returning the generated damage value, and removing
+     * this item from the player's inventory.
+     * @param character
+     */
     @Override
     public int interactWith(GameCharacter character) throws ItemInteractionException
     {

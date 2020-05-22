@@ -8,6 +8,9 @@ import java.awt.event.*;
 import java.awt.GridLayout;
 import java.awt.FlowLayout;
 
+/**
+ * This view let's the user change their character's name.
+ */
 public class ViewNamePrompt extends ViewPanel
 {
     public static final int PADDING = Window.PADDING;

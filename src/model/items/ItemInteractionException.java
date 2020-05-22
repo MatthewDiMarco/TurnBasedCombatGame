@@ -1,7 +1,7 @@
 package model.items;
 
 /**
- * When inventory capacity is reached.
+ * For all errors relating to Item / Character interactions.
  */
 public class ItemInteractionException extends GameStateException
 {

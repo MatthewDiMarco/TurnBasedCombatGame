@@ -2,7 +2,7 @@ package model.characters;
 import model.items.GameStateException;
 
 /**
- * When inventory capacity is reached.
+ * For all errors concerning invalid character state.
  */
 public class CharacterException extends GameStateException
 {

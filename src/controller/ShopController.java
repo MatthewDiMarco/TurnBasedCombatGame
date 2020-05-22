@@ -8,6 +8,9 @@ import model.items.Item;
 import model.items.DamageItem;
 import java.util.*;
 
+/**
+ * Responsible for storing shop data and facilitating shop/player interactions.
+ */
 public class ShopController 
 {
     private Factory factory;

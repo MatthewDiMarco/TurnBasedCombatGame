@@ -43,6 +43,10 @@ public class DefenceItem extends Item
         return super.getEffectRange() + " Defence";
     }
 
+    /**
+     * Equips this item the character's armour slot.
+     * @param character
+     */
     @Override
     public int interactWith(GameCharacter character) throws ItemInteractionException
     {

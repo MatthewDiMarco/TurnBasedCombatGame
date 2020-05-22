@@ -10,6 +10,10 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.*;
 
+/**
+ * This view display the player's currently equiped weapons and armour, while
+ * allowing them to select new ones from their inventory.
+ */
 public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
 {
     // Widgets
@@ -21,10 +25,6 @@ public class ViewEquip extends ViewPanel implements InventoryUpdateObservable
     // Controllers
     private PlayerController playerCon;
 
-    /**
-     * Constructor.
-     * @param inPlayerCon
-     */
     public ViewEquip(PlayerController inPlayerCon)
     {
         super(new FlowLayout(), "EQUIP WEAPONS AND ARMOUR", PADDING);

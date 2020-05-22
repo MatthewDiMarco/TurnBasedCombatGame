@@ -1,5 +1,8 @@
 package model.items;
 
+/**
+ * Multiplies damage by an amount (factor)
+ */
 public class EnchantmentPowerUp extends Enchantment
 {
     private double factor;

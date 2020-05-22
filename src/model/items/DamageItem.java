@@ -3,8 +3,8 @@ import model.characters.CharacterException;
 import model.characters.GameCharacter;
 
 /**
- * Weapons are used to deal damage to an opponent.
- * They can be granted enchantments to extend their destructive potential.
+ * This class can be a WeaponItem, or a Weapon decorated with one of many
+ * enchantments.
  */
 public abstract class DamageItem extends Item
 {
@@ -37,6 +37,10 @@ public abstract class DamageItem extends Item
         return dmgType;
     }
 
+    /**
+     * Equips this item the character's weapon slot.
+     * @param character
+     */
     @Override
     public int interactWith(GameCharacter character) throws ItemInteractionException
     {

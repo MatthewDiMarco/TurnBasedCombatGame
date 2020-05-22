@@ -8,8 +8,11 @@ import java.awt.BorderLayout;
 import java.awt.CardLayout;
 import java.awt.FlowLayout;
 import java.awt.event.*;
-import java.util.*;
 
+/**
+ * This view displays the stats events of an ongoing battle between the player 
+ * and their opponent. 
+ */
 public class ViewBattle extends ViewPanel implements CharacterActionObservable,
                                                      CharacterDeathObservable
 {

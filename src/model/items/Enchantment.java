@@ -1,8 +1,14 @@
 package model.items;
 
+/**
+ * Enchantments can have many different types of effects (e.g. + or * dmg).
+ * An enchantment can point to another enchantment, and then another, until 
+ * reaching the 'base' WeaponItem. This way, many enchantments can be added
+ * onto the same weapon, in any order.
+ */
 public abstract class Enchantment extends DamageItem
 {
-    protected Item next;
+    protected DamageItem next;
 
     public Enchantment(DamageItem inNext, String inName, int inCost, 
                        int inMinEff, int inMaxEff)

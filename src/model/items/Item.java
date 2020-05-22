@@ -3,9 +3,10 @@ import model.characters.GameCharacter;
 
 /**
  * Generic representation of the 'Item' entity. Items can take on many forms.
- * They have a name, cost and an effect range (min-max). This effect is just an
- * integer, and it's usage is context dependent. It could be damage, or healing, 
- * or defence -- depends on the child.
+ * They have a name, cost and an effect range (min-max).
+ * Because there are a number of ways a character can interact with an item,
+ * based on the type of item in question, an abstarct method "interactWith()" 
+ * must be implemented for each Subclass.
  */
 public abstract class Item
 {
@@ -66,10 +67,6 @@ public abstract class Item
         return eff;
     }
 
-    /**
-     * Cost accessor.
-     * @return The item's cost
-     */
     public int getCost()
     {
         return cost;

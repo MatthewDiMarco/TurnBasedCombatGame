@@ -2,7 +2,8 @@ package model.items;
 import java.util.*;
 
 /**
- * [description]
+ * An inventory for Game Characters, features 2 slots for equiping weapons and
+ * armour.
  */
 public class CharacterInventory extends Inventory 
 {

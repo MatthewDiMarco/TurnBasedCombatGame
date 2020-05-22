@@ -9,7 +9,6 @@ public class ViewPanel extends JPanel
     public ViewPanel(LayoutManager layout, String inTitle, int borderPad)
     {
         super(layout);
-        //this.setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
         if (inTitle.isEmpty())
         {
             this.setBorder(
